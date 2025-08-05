@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path, { resolve } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
@@ -65,7 +65,7 @@ const mainConfig = {
 
 const serviceWorkerConfig = {
     entry: {
-        "service-worker": resolve(__dirname, "src", "service-worker.ts"),
+        "service-worker": path.resolve(__dirname, "src", "service-worker.ts"),
     },
     target: "webworker",
     output: {
