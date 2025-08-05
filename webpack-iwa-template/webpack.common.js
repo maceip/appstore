@@ -23,16 +23,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const mainConfig = {
-    name: "main", 
+    name: "main",
     entry: {
         main: "./src/index.ts",
-        sw: './src/service-worker.ts'
+        sw: "./src/service-worker.ts",
     },
     output: {
         filename: (pathData) => {
-            return pathData.chunk.name === 'sw'
-            ? "service-worker.js"
-            : "[name].bundle.js";
+            return pathData.chunk.name === "sw" ? "service-worker.js" : "[name].bundle.js";
         },
         path: path.resolve(__dirname, "dist"),
         clean: true,
