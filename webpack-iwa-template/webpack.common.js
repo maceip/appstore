@@ -1,3 +1,5 @@
+
+
 /**
  * Copyright 2025 Google LLC
  *
@@ -23,6 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const mainConfig = {
+    name: "main", 
     entry: {
         main: "./src/index.ts",
     },
@@ -64,6 +67,7 @@ const mainConfig = {
 };
 
 const serviceWorkerConfig = {
+    name: "service-worker", 
     entry: {
         "service-worker": path.resolve(__dirname, "src", "service-worker.ts"),
     },

@@ -21,8 +21,11 @@ import { parsePemKey, NodeCryptoSigningStrategy, readPassphrase } from "wbn-sign
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PRIVATE_KEY_PATH = process.env.PRIVATE_KEY_PATH;
 const PRIVATE_KEY_PASSWORD = process.env.PRIVATE_KEY_PASSWORD;
@@ -33,20 +36,29 @@ if (!PRIVATE_KEY_PATH) {
 
 const privateKey = parsePemKey(
     fs.readFileSync(PRIVATE_KEY_PATH),
-    PRIVATE_KEY_PASSWORD || (await readPassphrase(PRIVATE_KEY_PATH)),
+    PRIVATE_KEY_PASSWORD || (await readPassphrase(PRIVATE_KEY_PATH))
 );
 
-export default commonConfigs.map((config) =>
+const prodConfigs = commonConfigs.map((config) =>
     merge(config, {
         mode: "production",
-        plugins: [
-            new WebBundlePlugin({
-                static: { dir: path.resolve(process.cwd(), "dist") },
-                output: "iwa-template.swbn",
-                integrityBlockSign: {
-                    strategy: new NodeCryptoSigningStrategy(privateKey),
-                },
-            }),
-        ],
-    }),
+    })
 );
+
+const webBundleConfig = {
+    name: "webbundle",
+    entry: {},
+    mode: "production",
+    dependencies: ["main", "service-worker"],
+    plugins: [
+        new WebBundlePlugin({
+            static: { dir: path.resolve(__dirname, "dist") },
+            output: "iwa-template.swbn",
+            integrityBlockSign: {
+                strategy: new NodeCryptoSigningStrategy(privateKey),
+            },
+        }),
+    ],
+};
+
+export default [...prodConfigs, webBundleConfig];
