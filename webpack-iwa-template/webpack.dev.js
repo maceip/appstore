@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,33 +15,27 @@
  */
 
 import { merge } from "webpack-merge";
-import commonConfigs from "./webpack.common.js";
+import common from "./webpack.common.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 
-export default commonConfigs.map((config) => {
-    if (config.target === "webworker") {
-        return merge(config, { mode: "development" });
-    }
-
-    return merge(config, {
-        mode: "development",
-        devtool: "inline-source-map",
-        devServer: {
-            port: PORT || 4321,
-            allowedHosts: "all",
-            client: {
-                webSocketURL: {
-                    protocol: "ws",
-                    hostname: "localhost",
-                    port: PORT || 4321,
-                },
+export default merge(common, {
+    mode: "development",
+    devtool: "inline-source-map",
+    devServer: {
+        port: PORT || 4321,
+        allowedHosts: "all",
+        client: {
+            webSocketURL: {
+                protocol: "ws",
+                hostname: "localhost",
+                port: PORT || 4321,
             },
-            static: "./dist",
-            hot: true,
         },
-    });
+        static: "./dist",
+        hot: true,
+    },
 });

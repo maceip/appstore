@@ -23,13 +23,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const mainConfig = {
-    name: "main",
+    name: "main", 
     entry: {
         main: "./src/index.ts",
+        sw: './src/service-worker.ts'
     },
     output: {
-        filename: "[name].bundle.js",
+        filename: (pathData) => {
+            return pathData.chunk.name === 'sw'
+            ? "service-worker.js"
+            : "[name].bundle.js";
+        },
         path: path.resolve(__dirname, "dist"),
+        clean: true,
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -64,28 +70,4 @@ const mainConfig = {
     },
 };
 
-const serviceWorkerConfig = {
-    name: "service-worker",
-    entry: {
-        "service-worker": path.resolve(__dirname, "src", "service-worker.ts"),
-    },
-    target: "webworker",
-    output: {
-        filename: "service-worker.js",
-        path: path.resolve(__dirname, "dist"),
-    },
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: "ts-loader",
-                exclude: /node_modules/,
-            },
-        ],
-    },
-    resolve: {
-        extensions: [".ts", ".js"],
-    },
-};
-
-export default [mainConfig, serviceWorkerConfig];
+export default mainConfig;
