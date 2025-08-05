@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "types": ["trusted-types"],
         "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,

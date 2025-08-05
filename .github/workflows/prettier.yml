@@ -1,4 +1,4 @@
-name: 'Lint and Format'
+name: 'Check formatting'
 
 # This workflow runs on pushes to any branch
 # and on any pull request
@@ -7,7 +7,7 @@ on:
 
 jobs:
   prettier-format-commit:
-    name: Prettier format and commit
+    name: Check prettier formatting
     runs-on: ubuntu-latest
 
     steps:

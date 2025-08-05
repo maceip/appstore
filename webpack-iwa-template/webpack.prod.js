@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,12 @@
  */
 
 import { merge } from "webpack-merge";
-import common from "./webpack.common.js";
+import commonConfigs from "./webpack.common.js";
 import WebBundlePlugin from "webbundle-webpack-plugin";
 import { parsePemKey, NodeCryptoSigningStrategy, readPassphrase } from "wbn-sign";
 import dotenv from "dotenv";
 import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -30,20 +31,22 @@ if (!PRIVATE_KEY_PATH) {
     throw Error("Build Failed: Specify PRIVATE_KEY_PATH in your .env file");
 }
 
-//Get the key and decrypt it
 const privateKey = parsePemKey(
     fs.readFileSync(PRIVATE_KEY_PATH),
     PRIVATE_KEY_PASSWORD || (await readPassphrase(PRIVATE_KEY_PATH)),
 );
 
-export default merge(common, {
-    mode: "production",
-    plugins: [
-        new WebBundlePlugin({
-            output: "iwa-template.swbn",
-            integrityBlockSign: {
-                strategy: new NodeCryptoSigningStrategy(privateKey),
-            },
-        }),
-    ],
-});
+export default commonConfigs.map((config) =>
+    merge(config, {
+        mode: "production",
+        plugins: [
+            new WebBundlePlugin({
+                static: { dir: path.resolve(process.cwd(), "dist") },
+                output: "iwa-template.swbn",
+                integrityBlockSign: {
+                    strategy: new NodeCryptoSigningStrategy(privateKey),
+                },
+            }),
+        ],
+    }),
+);
