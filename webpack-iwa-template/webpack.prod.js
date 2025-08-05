@@ -36,13 +36,13 @@ if (!PRIVATE_KEY_PATH) {
 
 const privateKey = parsePemKey(
     fs.readFileSync(PRIVATE_KEY_PATH),
-    PRIVATE_KEY_PASSWORD || (await readPassphrase(PRIVATE_KEY_PATH))
+    PRIVATE_KEY_PASSWORD || (await readPassphrase(PRIVATE_KEY_PATH)),
 );
 
 const prodConfigs = commonConfigs.map((config) =>
     merge(config, {
         mode: "production",
-    })
+    }),
 );
 
 const webBundleConfig = {
