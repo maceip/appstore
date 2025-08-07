@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "types": ["trusted-types"],
         "target": "ES2022",
         "useDefineForClassFields": true,
         "module": "ESNext",

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,12 +22,16 @@ import CopyPlugin from "copy-webpack-plugin";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default {
+const mainConfig = {
+    name: "main",
     entry: {
         main: "./src/index.ts",
+        sw: "./src/service-worker.ts",
     },
     output: {
-        filename: "[name].bundle.js",
+        filename: (pathData) => {
+            return pathData.chunk.name === "sw" ? "service-worker.js" : "[name].bundle.js";
+        },
         path: path.resolve(__dirname, "dist"),
         clean: true,
     },
@@ -37,7 +41,7 @@ export default {
             template: "src/index.html",
             chunks: ["main"],
         }),
-        //Copy manifest and icon to /dist
+        // Copy manifest and icon to /dist
         new CopyPlugin({
             patterns: [{ from: "public" }],
         }),
@@ -63,3 +67,5 @@ export default {
         extensions: [".ts", ".js"],
     },
 };
+
+export default mainConfig;

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may not use a copy of the License at
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +15,25 @@
  */
 
 import "./style.css";
+import DOMPurify from "dompurify";
 
 const parent_container = document.querySelector("#app") as HTMLDivElement;
 
-function deleteChildNodes(container: HTMLDivElement): void {
-    while (container.firstChild) {
-        container.removeChild(container.firstChild);
-    }
+let sanitizerPolicy: any = null!;
+let urlPolicy: any = null!;
+
+// This block will always execute in Chrome, so the policies will be assigned.
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    // Policy for sanitizing HTML strings before assigning them to innerHTML.
+    sanitizerPolicy = window.trustedTypes.createPolicy("iwa-sanitizer", {
+        createHTML: (string) => DOMPurify.sanitize(string),
+    });
+
+    // Policy for creating TrustedScriptURL. This is required for navigator.serviceWorker.register().
+    // For this app, we can just pass the URL through, as we know it's safe.
+    urlPolicy = window.trustedTypes.createPolicy("iwa-url-policy", {
+        createScriptURL: (url) => url,
+    });
 }
 
 /**
@@ -29,7 +41,7 @@ function deleteChildNodes(container: HTMLDivElement): void {
  * It first clears the container to prevent duplicate content.
  */
 function loadOnlineContent() {
-    deleteChildNodes(parent_container);
+    parent_container.innerHTML = sanitizerPolicy.createHTML("");
 
     const icon_elements: [string, string][] = [
         [
@@ -74,7 +86,7 @@ function loadOnlineContent() {
  * Displays an offline message in the app container.
  */
 function showOfflineMessage() {
-    deleteChildNodes(parent_container);
+    parent_container.innerHTML = sanitizerPolicy.createHTML("");
     const p_offline = document.createElement("p");
 
     const title = document.createElement("h1");
@@ -86,6 +98,22 @@ function showOfflineMessage() {
     p_offline.textContent = "You are offline. Please check your connection.";
     parent_container.appendChild(p_offline);
 }
+
+window.addEventListener("load", () => {
+    if ("serviceWorker" in navigator) {
+        // Use the trusted type policy to create a TrustedScriptURL.
+        const swUrl = urlPolicy.createScriptURL("./service-worker.js");
+
+        navigator.serviceWorker
+            .register(swUrl)
+            .then((registration) => {
+                console.log("Service Worker registered with scope:", registration.scope);
+            })
+            .catch((error) => {
+                console.error("Service Worker registration failed:", error);
+            });
+    }
+});
 
 window.addEventListener("online", () => {
     loadOnlineContent();

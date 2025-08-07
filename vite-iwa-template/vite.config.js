@@ -17,6 +17,7 @@
 import { defineConfig } from "vite";
 import injectHTML from "vite-plugin-html-inject";
 import fs from "fs";
+import { resolve } from "path";
 
 import wbn from "rollup-plugin-webbundle";
 import * as wbnSign from "wbn-sign";
@@ -77,6 +78,17 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: "./index.html",
+                "service-worker": resolve(__dirname, "src/service-worker.ts"),
+            },
+
+            output: {
+                entryFileNames: (chunkInfo) => {
+                    if (chunkInfo.name === "service-worker") {
+                        return "service-worker.js";
+                    }
+
+                    return "assets/[name]-[hash].js";
+                },
             },
         },
     },

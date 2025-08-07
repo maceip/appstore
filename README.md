@@ -1,9 +1,11 @@
 # IWA project templates
 
-This project will contain templates that could be used for creation of new Isolated Web Apps (IWAs) projects.
+This project will contain templates that could be used for creation of new Isolated Web Apps (IWAs)
+projects.
+
 ## Prerequisites
 
-- Google Chrome 120+
+- Google Chrome 140+
 
 - openssl
 
@@ -23,7 +25,7 @@ Open Google Chrome, go to `chrome://flags` and enable
 
     chrome://flags/#enable-isolated-web-app-dev-mode
 
-    chrome://flags/#enable-isolated-web-apps
+    chrome://flags/#enable-isolated-web-apps (MacOS/Windows/Linux only)
 
 Once enabled, and chrome is restarted, go to `chrome://web-app-internals`, the web app internals
 page. This page shows you the web apps you have installed, including Isolated Web Apps and
@@ -82,7 +84,8 @@ Next, create a .env file containing:
     PRIVATE_KEY_PASSWORD='YOUR_KEY_PASSWORD'
     PORT=YOUR_PORT
 
-_Note: If you're using vite, also declare a variable called NODE_ENV, you can set it to either production/development_
+_Note: If you're using vite, also declare a variable called NODE_ENV, you can set it to either
+production/development_
 
 _Note: If you don't specify PORT, the app will fall back to default value (4321)_
 
@@ -105,9 +108,8 @@ slu74sbybztfypa43w7f7rd34cbhautjcrfegz5lbow7vmwjojbqaaic).
 
 _Note: Your web bundle ID will look differently, this is just an example_
 
-Since IWA are using a different schema `isolated-app://` instead of `https://`, you can access it by
-pasting `isolated-app://your-web-bundle-id` in Chrome, or by running it like any other app on your
-computer.
+To run your newly installed Isolated Web App, use chrome://apps (Windows/Mac/Linux only) or by
+running it like any other application on your desktop.
 
 ### Personalizing this template
 
@@ -126,7 +128,6 @@ Related information:
 Isolated Web Apps share the same
 [Manifest Properties](https://web.dev/articles/add-manifest#manifest-properties) as Progressive Web
 Apps, with some slight variations, see:
-[Isolated Web Apps explainer - Web App manifest section](https://chromeos.dev/en/web/isolated-web-apps)
 
 There are two fields that should be included, `version` and `update_manifest_url`
 
@@ -139,8 +140,8 @@ There are two fields that should be included, `version` and `update_manifest_url
 
 - How to add API Permissions?
 
-By default, Chrome blocks all permission requests from IWAs. You can opt-in to permission policies you need by specifying
-a `permissions_policy` field in your manifest.
+By default, Chrome blocks all permission requests from IWAs. You can opt-in to permission policies
+you need by specifying a `permissions_policy` field in your manifest.
 
 _Note: Adding a permission here does not automatically grant it, it just makes it avaliable to be
 granted, when a request for that capacity is made._
@@ -155,7 +156,7 @@ granted, when a request for that capacity is made._
 Related Information
 
 - [Permissions Policy - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy#allowlists)
-- [Permissions Policy header - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy#allowlists)
+- [Permissions Policy header - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy)
 - [Web Application Manifest - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest)
 
 ### Related Information
