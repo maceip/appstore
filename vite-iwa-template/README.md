@@ -60,6 +60,22 @@ bun run dev
 - **TypeScript**: Fully typed implementation with Direct Sockets API definitions
 - **Bun Integration**: Built with Bun for modern development experience
 
+## 🏆 Champions
+
+The implementations we're using for core protocols:
+
+### **QUIC**
+- **[MatrixAI js-quic](https://github.com/MatrixAI/js-quic)** - Pure JavaScript QUIC implementation with HTTP/3 and WebTransport support
+
+### **TLS** 
+- **[SubTLS](https://github.com/jawj/subtls)** - Lightweight TLS 1.3 implementation in TypeScript for browsers and Deno
+
+### **HTTP**
+- **Custom HTTP/1.1 Implementation** - Built from scratch using Direct Sockets API with full RFC compliance
+
+### **WebSocket**
+- **Custom WebSocket Implementation** - RFC 6455 compliant WebSocket server with frame parsing and connection management
+
 ## 📁 Project Structure
 
 ```

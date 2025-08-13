@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 3 Integration Test - Advanced Protocol Support</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .success-criteria {
+            background: #f3e8ff;
+            border-left: 4px solid #6f42c1;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        button {
+            background: #6f42c1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #5a32a3;
+        }
+        
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6f42c1, #e83e8c);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .connection-status {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .protocol-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6f42c1;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Phase 3 Integration Test</h1>
+        <h2>Advanced Protocol Support</h2>
+        <p>Testing QUIC, WebTransport, HTTP/2/3 support, and advanced networking features</p>
+    </div>
+
+    <!-- Success Criteria -->
+    <div class="test-section">
+        <h3>📋 Success Criteria</h3>
+        <div class="success-criteria">
+            <h4>Phase 3 must achieve:</h4>
+            <ul>
+                <li><strong>SC3.1:</strong> Integrate js-quic for HTTP/2/3 support</li>
+                <li><strong>SC3.2:</strong> Add WebTransport capabilities</li>
+                <li><strong>SC3.3:</strong> Implement QUIC-based WebSocket alternatives</li>
+                <li><strong>SC3.4:</strong> Support advanced networking features</li>
+                <li><strong>SC3.5:</strong> Create protocol abstraction layer</li>
+                <li><strong>SC3.6:</strong> Implement security and encryption</li>
+                <li><strong>SC3.7:</strong> Add performance monitoring and metrics</li>
+                <li><strong>SC3.8:</strong> Handle protocol errors and edge cases</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test Progress -->
+    <div class="test-section">
+        <h3>🚀 Test Progress</h3>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%">0%</div>
+        </div>
+        <div id="test-results"></div>
+    </div>
+
+    <!-- Protocol Metrics -->
+    <div class="test-section">
+        <h3>📊 Protocol Metrics</h3>
+        <div class="protocol-metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="quic-connections">0</div>
+                <div class="metric-label">QUIC Connections</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="webtransport-streams">0</div>
+                <div class="metric-label">WebTransport Streams</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="avg-latency">0ms</div>
+                <div class="metric-label">Average Latency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="throughput">0 KB/s</div>
+                <div class="metric-label">Throughput</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="test-section">
+        <h3>🔗 Connection Status</h3>
+        <div id="connection-status" class="connection-status">
+            <p>No active connections...</p>
+        </div>
+        <button onclick="refreshConnections()">Refresh Connections</button>
+        <button onclick="clearConnections()">Clear Connections</button>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="test-section">
+        <h3>🎮 Test Controls</h3>
+        <button onclick="runAllTests()" class="btn-success">Run All Tests</button>
+        <button onclick="runSingleTest('quicSupport')">Test QUIC Support</button>
+        <button onclick="runSingleTest('webTransport')">Test WebTransport</button>
+        <button onclick="runSingleTest('quicWebSocket')">Test QUIC WebSocket</button>
+        <button onclick="runSingleTest('protocolAbstraction')">Test Protocol Layer</button>
+        <button onclick="runSingleTest('performanceMetrics')">Test Performance</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <!-- Test Output -->
+    <div class="test-section">
+        <h3>📊 Test Output</h3>
+        <div id="test-output" class="output">Ready to run Phase 3 integration tests...\n</div>
+    </div>
+
+    <!-- Implementation Status -->
+    <div class="test-section">
+        <h3>⚙️ Implementation Status</h3>
+        <div id="implementation-status">
+            <p>Checking implementation status...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Test state
+        let testResults = new Map();
+        let totalTests = 8;
+        let completedTests = 0;
+        let protocolManager = null;
+        let activeConnections = new Map();
+        let performanceMetrics = {
+            quicConnections: 0,
+            webTransportStreams: 0,
+            avgLatency: 0,
+            throughput: 0
+        };
+
+        // Logging function
+        function log(message, type = 'info') {
+            const output = document.getElementById('test-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            output.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const percentage = Math.round((completedTests / totalTests) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Update test results display
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            for (const [testName, result] of testResults) {
+                const className = result.status === 'pass' ? 'test-pass' : 
+                                result.status === 'fail' ? 'test-fail' : 'test-pending';
+                html += `<div class="${className}">${testName}: ${result.message}</div>`;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Set test result
+        function setTestResult(testName, status, message) {
+            testResults.set(testName, { status, message });
+            if (status !== 'pending') {
+                completedTests++;
+            }
+            updateProgress();
+            updateTestResults();
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            document.getElementById('quic-connections').textContent = performanceMetrics.quicConnections;
+            document.getElementById('webtransport-streams').textContent = performanceMetrics.webTransportStreams;
+            document.getElementById('avg-latency').textContent = performanceMetrics.avgLatency + 'ms';
+            document.getElementById('throughput').textContent = performanceMetrics.throughput + ' KB/s';
+        }
+
+        // Update connection status display
+        function updateConnectionStatus() {
+            const statusDiv = document.getElementById('connection-status');
+            
+            if (activeConnections.size === 0) {
+                statusDiv.innerHTML = '<p>No active connections...</p>';
+                return;
+            }
+            
+            let html = '<h4>Active Connections:</h4>';
+            for (const [id, connection] of activeConnections) {
+                const statusColor = {
+                    'connected': '#28a745',
+                    'connecting': '#ffc107',
+                    'disconnected': '#6c757d',
+                    'error': '#dc3545'
+                }[connection.status] || '#6c757d';
+                
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${statusColor}; background: white;">
+                        <strong>${connection.protocol}</strong> (${id})<br>
+                        Status: ${connection.status} | Latency: ${connection.latency}ms<br>
+                        Endpoint: ${connection.endpoint}<br>
+                        Data Sent: ${connection.bytesSent} bytes | Received: ${connection.bytesReceived} bytes
+                    </div>
+                `;
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Test SC3.1: QUIC support integration
+        async function testQuicSupport() {
+            log('Testing SC3.1: QUIC protocol support integration...', 'info');
+            setTestResult('SC3.1: QUIC Support', 'pending', 'Testing...');
+            
+            try {
+                // Check if QUIC module is available
+                const { QUICServer, QUICClient } = await import('../src/quic-server.js');
+                
+                // Test QUIC server creation
+                const server = new QUICServer({
+                    host: 'localhost',
+                    port: 8443,
+                    cert: await generateTestCertificate(),
+                    key: await generateTestKey()
+                });
+                
+                // Test server startup
+                await server.start();
+                log(`   🚀 QUIC server started on localhost:8443`, 'success');
+                
+                // Test QUIC client connection
+                const client = new QUICClient();
+                const connection = await client.connect('https://localhost:8443');
+                
+                if (!connection) {
+                    throw new Error('QUIC connection failed');
+                }
+                
+                // Test HTTP/3 request over QUIC
+                const response = await connection.request({
+                    method: 'GET',
+                    path: '/test',
+                    headers: { 'User-Agent': 'IWA-Test-Client/1.0' }
+                });
+                
+                if (response.status !== 200) {
+                    throw new Error(`HTTP/3 request failed with status ${response.status}`);
+                }
+                
+                // Update metrics
+                performanceMetrics.quicConnections++;
+                performanceMetrics.avgLatency = connection.latency || 0;
+                updateMetrics();
+                
+                // Track connection
+                activeConnections.set('quic-test-1', {
+                    protocol: 'QUIC/HTTP3',
+                    status: 'connected',
+                    endpoint: 'localhost:8443',
+                    latency: connection.latency || 0,
+                    bytesSent: response.bytesSent || 0,
+                    bytesReceived: response.bytesReceived || 0
+                });
+                updateConnectionStatus();
+                
+                // Test connection multiplexing
+                const stream1 = await connection.createStream();
+                const stream2 = await connection.createStream();
+                
+                if (!stream1 || !stream2) {
+                    throw new Error('QUIC stream multiplexing failed');
+                }
+                
+                // Cleanup
+                await connection.close();
+                await server.stop();
+                
+                log(`✅ QUIC support working correctly`, 'success');
+                log(`   HTTP/3 over QUIC: ${response.status}`, 'info');
+                log(`   Stream multiplexing: ${stream1.id}, ${stream2.id}`, 'info');
+                setTestResult('SC3.1: QUIC Support', 'pass', 'QUIC protocol support integrated successfully');
+                
+            } catch (error) {
+                log(`❌ QUIC support test failed: ${error.message}`, 'error');
+                setTestResult('SC3.1: QUIC Support', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.2: WebTransport capabilities
+        async function testWebTransport() {
+            log('Testing SC3.2: WebTransport capabilities...', 'info');
+            setTestResult('SC3.2: WebTransport', 'pending', 'Testing...');
+            
+            try {
+                // Check WebTransport API availability
+                if (!window.WebTransport) {
+                    throw new Error('WebTransport API not available in this browser');
+                }
+                
+                const { WebTransportServer } = await import('../src/quic-server.js');
+                
+                // Create WebTransport server
+                const server = new WebTransportServer({
+                    port: 8444,
+                    cert: await generateTestCertificate()
+                });
+                
+                await server.start();
+                log(`   🚀 WebTransport server started on port 8444`, 'success');
+                
+                // Create WebTransport connection
+                const transport = new WebTransport('https://localhost:8444/webtransport');
+                await transport.ready;
+                
+                log(`   🔗 WebTransport connection established`, 'success');
+                
+                // Test bidirectional stream
+                const stream = await transport.createBidirectionalStream();
+                const writer = stream.writable.getWriter();
+                const reader = stream.readable.getReader();
+                
+                // Send test data
+                const testData = new TextEncoder().encode('Hello WebTransport!');
+                await writer.write(testData);
+                
+                // Read response
+                const { value, done } = await reader.read();
+                if (done || !value) {
+                    throw new Error('WebTransport stream read failed');
+                }
+                
+                const responseText = new TextDecoder().decode(value);
+                log(`   📨 WebTransport echo: ${responseText}`, 'success');
+                
+                // Test datagram
+                const datagramWriter = transport.datagrams.writable.getWriter();
+                const datagramReader = transport.datagrams.readable.getReader();
+                
+                await datagramWriter.write(new TextEncoder().encode('Datagram test'));
+                const datagramResult = await datagramReader.read();
+                
+                if (!datagramResult.done && datagramResult.value) {
+                    log(`   📦 WebTransport datagram: ${new TextDecoder().decode(datagramResult.value)}`, 'success');
+                }
+                
+                // Update metrics
+                performanceMetrics.webTransportStreams++;
+                updateMetrics();
+                
+                // Track connection
+                activeConnections.set('webtransport-1', {
+                    protocol: 'WebTransport',
+                    status: 'connected',
+                    endpoint: 'localhost:8444',
+                    latency: 0, // WebTransport doesn't expose latency directly
+                    bytesSent: testData.length,
+                    bytesReceived: value ? value.length : 0
+                });
+                updateConnectionStatus();
+                
+                // Cleanup
+                await writer.close();
+                await reader.cancel();
+                transport.close();
+                await server.stop();
+                
+                log(`✅ WebTransport capabilities working`, 'success');
+                setTestResult('SC3.2: WebTransport', 'pass', 'WebTransport bidirectional communication working');
+                
+            } catch (error) {
+                log(`❌ WebTransport test failed: ${error.message}`, 'error');
+                setTestResult('SC3.2: WebTransport', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.3: QUIC-based WebSocket alternatives
+        async function testQuicWebSocket() {
+            log('Testing SC3.3: QUIC-based WebSocket alternatives...', 'info');
+            setTestResult('SC3.3: QUIC WebSocket', 'pending', 'Testing...');
+            
+            try {
+                const { QUICWebSocket } = await import('../src/websocket-server.js');
+                
+                // Create QUIC WebSocket server
+                const server = new QUICWebSocket.Server({
+                    port: 8445,
+                    cert: await generateTestCertificate()
+                });
+                
+                await server.start();
+                log(`   🚀 QUIC WebSocket server started on port 8445`, 'success');
+                
+                // Create QUIC WebSocket client
+                const client = new QUICWebSocket('quic://localhost:8445/ws');
+                
+                // Test connection establishment
+                await new Promise((resolve, reject) => {
+                    client.onopen = () => {
+                        log(`   🔗 QUIC WebSocket connection opened`, 'success');
+                        resolve();
+                    };
+                    client.onerror = (error) => {
+                        reject(new Error(`QUIC WebSocket connection failed: ${error.message}`));
+                    };
+                    setTimeout(() => reject(new Error('QUIC WebSocket connection timeout')), 5000);
+                });
+                
+                // Test message sending and receiving
+                let messageReceived = false;
+                client.onmessage = (event) => {
+                    messageReceived = true;
+                    log(`   📨 QUIC WebSocket message: ${event.data}`, 'success');
+                };
+                
+                client.send('Hello QUIC WebSocket!');
+                
+                // Wait for echo response
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (!messageReceived) {
+                    log(`   ⚠️ QUIC WebSocket echo not received (may be expected)`, 'warning');
+                }
+                
+                // Test connection pooling
+                const client2 = new QUICWebSocket('quic://localhost:8445/ws');
+                await new Promise((resolve, reject) => {
+                    client2.onopen = resolve;
+                    client2.onerror = reject;
+                    setTimeout(() => reject(new Error('Second connection timeout')), 5000);
+                });
+                
+                log(`   🔗 Connection pooling: 2 connections established`, 'success');
+                
+                // Test automatic reconnection
+                client.close();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (client.readyState === QUICWebSocket.CONNECTING) {
+                    log(`   🔄 Automatic reconnection initiated`, 'success');
+                }
+                
+                // Track connections
+                activeConnections.set('quic-ws-1', {
+                    protocol: 'QUIC-WebSocket',
+                    status: 'connected',
+                    endpoint: 'localhost:8445',
+                    latency: 0,
+                    bytesSent: 'Hello QUIC WebSocket!'.length,
+                    bytesReceived: messageReceived ? 'Hello QUIC WebSocket!'.length : 0
+                });
+                updateConnectionStatus();
+                
+                // Cleanup
+                client.close();
+                client2.close();
+                await server.stop();
+                
+                log(`✅ QUIC WebSocket alternatives working`, 'success');
+                setTestResult('SC3.3: QUIC WebSocket', 'pass', 'QUIC-based WebSocket alternatives implemented');
+                
+            } catch (error) {
+                log(`❌ QUIC WebSocket test failed: ${error.message}`, 'error');
+                setTestResult('SC3.3: QUIC WebSocket', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.4: Advanced networking features
+        async function testAdvancedNetworking() {
+            log('Testing SC3.4: Advanced networking features...', 'info');
+            setTestResult('SC3.4: Advanced Networking', 'pending', 'Testing...');
+            
+            try {
+                const { AdvancedNetworking } = await import('../src/quic-server.js');
+                
+                const networking = new AdvancedNetworking();
+                
+                // Test connection migration
+                const connection = await networking.createConnection('localhost:8443');
+                const migrationResult = await networking.migrateConnection(connection, 'localhost:8444');
+                
+                if (!migrationResult) {
+                    log(`   ⚠️ Connection migration not supported (may be expected)`, 'warning');
+                } else {
+                    log(`   🔄 Connection migration successful`, 'success');
+                }
+                
+                // Test 0-RTT connection establishment
+                const zeroRttConnection = await networking.connect0RTT('localhost:8443');
+                if (zeroRttConnection && zeroRttConnection.is0RTT) {
+                    log(`   ⚡ 0-RTT connection established`, 'success');
+                } else {
+                    log(`   ⚠️ 0-RTT not available (may be expected for first connection)`, 'warning');
+                }
+                
+                // Test network change handling
+                const networkChangeHandler = networking.onNetworkChange((event) => {
+                    log(`   📶 Network change detected: ${event.type}`, 'info');
+                });
+                
+                // Simulate network change
+                networking.simulateNetworkChange('wifi-to-cellular');
+                
+                // Test performance monitoring
+                const perfMonitor = networking.getPerformanceMonitor();
+                const metrics = await perfMonitor.getMetrics();
+                
+                if (metrics.latency !== undefined) {
+                    performanceMetrics.avgLatency = metrics.latency;
+                    log(`   📊 Network latency: ${metrics.latency}ms`, 'info');
+                }
+                
+                if (metrics.throughput !== undefined) {
+                    performanceMetrics.throughput = Math.round(metrics.throughput / 1024);
+                    log(`   📊 Network throughput: ${performanceMetrics.throughput} KB/s`, 'info');
+                }
+                
+                updateMetrics();
+                
+                log(`✅ Advanced networking features working`, 'success');
+                setTestResult('SC3.4: Advanced Networking', 'pass', 'Advanced networking features implemented');
+                
+            } catch (error) {
+                log(`❌ Advanced networking test failed: ${error.message}`, 'error');
+                setTestResult('SC3.4: Advanced Networking', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.5: Protocol abstraction layer
+        async function testProtocolAbstraction() {
+            log('Testing SC3.5: Protocol abstraction layer...', 'info');
+            setTestResult('SC3.5: Protocol Abstraction', 'pending', 'Testing...');
+            
+            try {
+                const { ProtocolManager } = await import('../src/quic-server.js');
+                
+                protocolManager = new ProtocolManager();
+                
+                // Test protocol registration
+                await protocolManager.registerProtocol('http1', {
+                    priority: 1,
+                    fallback: true,
+                    createConnection: (url) => new XMLHttpRequest()
+                });
+                
+                await protocolManager.registerProtocol('http2', {
+                    priority: 2,
+                    createConnection: (url) => new HTTP2Connection(url)
+                });
+                
+                await protocolManager.registerProtocol('http3', {
+                    priority: 3,
+                    createConnection: (url) => new QUICConnection(url)
+                });
+                
+                // Test protocol negotiation
+                const negotiatedProtocol = await protocolManager.negotiateProtocol('https://example.com');
+                log(`   🤝 Negotiated protocol: ${negotiatedProtocol}`, 'success');
+                
+                // Test unified API
+                const connection = await protocolManager.connect('https://localhost:8443');
+                if (!connection) {
+                    throw new Error('Protocol abstraction connection failed');
+                }
+                
+                const response = await connection.request({
+                    method: 'GET',
+                    url: '/test',
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                if (!response) {
+                    throw new Error('Protocol abstraction request failed');
+                }
+                
+                log(`   📡 Unified API request: ${response.status || 'success'}`, 'success');
+                
+                // Test automatic protocol upgrading
+                const upgradedConnection = await protocolManager.upgradeConnection(connection, 'http3');
+                if (upgradedConnection) {
+                    log(`   ⬆️ Protocol upgrade successful: ${upgradedConnection.protocol}`, 'success');
+                } else {
+                    log(`   ⚠️ Protocol upgrade not available`, 'warning');
+                }
+                
+                // Test protocol-specific optimizations
+                const optimizations = protocolManager.getOptimizations('http3');
+                if (optimizations.length > 0) {
+                    log(`   ⚡ Protocol optimizations: ${optimizations.join(', ')}`, 'success');
+                }
+                
+                log(`✅ Protocol abstraction layer working`, 'success');
+                setTestResult('SC3.5: Protocol Abstraction', 'pass', 'Protocol abstraction layer implemented');
+                
+            } catch (error) {
+                log(`❌ Protocol abstraction test failed: ${error.message}`, 'error');
+                setTestResult('SC3.5: Protocol Abstraction', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.6: Security and encryption
+        async function testSecurityEncryption() {
+            log('Testing SC3.6: Security and encryption...', 'info');
+            setTestResult('SC3.6: Security & Encryption', 'pending', 'Testing...');
+            
+            try {
+                const { SecurityManager } = await import('../src/tls-server.js');
+                
+                const security = new SecurityManager();
+                
+                // Test TLS 1.3 support
+                const tlsConfig = await security.createTLSConfig({
+                    version: '1.3',
+                    cipherSuites: ['TLS_AES_256_GCM_SHA384', 'TLS_CHACHA20_POLY1305_SHA256']
+                });
+                
+                if (!tlsConfig) {
+                    throw new Error('TLS 1.3 configuration failed');
+                }
+                
+                log(`   🔒 TLS 1.3 configuration created`, 'success');
+                
+                // Test certificate validation
+                const cert = await generateTestCertificate();
+                const validationResult = await security.validateCertificate(cert);
+                
+                if (!validationResult.valid) {
+                    log(`   ⚠️ Certificate validation: ${validationResult.errors.join(', ')}`, 'warning');
+                } else {
+                    log(`   ✅ Certificate validation passed`, 'success');
+                }
+                
+                // Test client certificate authentication
+                const clientCert = await security.generateClientCertificate();
+                const authResult = await security.authenticateClient(clientCert);
+                
+                if (authResult) {
+                    log(`   🎫 Client certificate authentication successful`, 'success');
+                } else {
+                    log(`   ⚠️ Client certificate authentication not configured`, 'warning');
+                }
+                
+                // Test end-to-end encryption
+                const encryptionKey = await security.generateEncryptionKey();
+                const testData = 'Sensitive test data';
+                const encrypted = await security.encrypt(testData, encryptionKey);
+                const decrypted = await security.decrypt(encrypted, encryptionKey);
+                
+                if (decrypted !== testData) {
+                    throw new Error('End-to-end encryption failed');
+                }
+                
+                log(`   🔐 End-to-end encryption working`, 'success');
+                
+                // Test security headers
+                const securityHeaders = security.getSecurityHeaders();
+                const expectedHeaders = ['Strict-Transport-Security', 'Content-Security-Policy'];
+                
+                for (const header of expectedHeaders) {
+                    if (securityHeaders[header]) {
+                        log(`   🛡️ Security header: ${header}`, 'success');
+                    }
+                }
+                
+                log(`✅ Security and encryption working`, 'success');
+                setTestResult('SC3.6: Security & Encryption', 'pass', 'Security and encryption implemented');
+                
+            } catch (error) {
+                log(`❌ Security and encryption test failed: ${error.message}`, 'error');
+                setTestResult('SC3.6: Security & Encryption', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.7: Performance monitoring and metrics
+        async function testPerformanceMetrics() {
+            log('Testing SC3.7: Performance monitoring and metrics...', 'info');
+            setTestResult('SC3.7: Performance Metrics', 'pending', 'Testing...');
+            
+            try {
+                const { PerformanceMonitor } = await import('../src/quic-server.js');
+                
+                const monitor = new PerformanceMonitor();
+                
+                // Test connection performance tracking
+                await monitor.startTracking();
+                
+                // Simulate some network activity
+                const startTime = performance.now();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                const endTime = performance.now();
+                
+                monitor.recordLatency(endTime - startTime);
+                monitor.recordThroughput(1024 * 50); // 50KB
+                
+                // Test bandwidth monitoring
+                const bandwidthMetrics = await monitor.getBandwidthMetrics();
+                if (bandwidthMetrics.upload !== undefined && bandwidthMetrics.download !== undefined) {
+                    log(`   📊 Bandwidth - Upload: ${bandwidthMetrics.upload} KB/s, Download: ${bandwidthMetrics.download} KB/s`, 'success');
+                }
+                
+                // Test protocol-specific metrics
+                const quicMetrics = await monitor.getProtocolMetrics('quic');
+                if (quicMetrics) {
+                    log(`   📊 QUIC metrics - RTT: ${quicMetrics.rtt}ms, Packet Loss: ${quicMetrics.packetLoss}%`, 'success');
+                }
+                
+                // Test performance debugging
+                const debugInfo = await monitor.getDebugInfo();
+                if (debugInfo.connections) {
+                    log(`   🐛 Debug info - Active connections: ${debugInfo.connections.length}`, 'success');
+                }
+                
+                // Test performance optimization suggestions
+                const optimizations = await monitor.getOptimizationSuggestions();
+                if (optimizations.length > 0) {
+                    log(`   💡 Optimization suggestions: ${optimizations.length} found`, 'success');
+                }
+                
+                // Update global metrics
+                const currentMetrics = await monitor.getCurrentMetrics();
+                if (currentMetrics.latency) {
+                    performanceMetrics.avgLatency = Math.round(currentMetrics.latency);
+                }
+                if (currentMetrics.throughput) {
+                    performanceMetrics.throughput = Math.round(currentMetrics.throughput / 1024);
+                }
+                
+                updateMetrics();
+                
+                log(`✅ Performance monitoring working`, 'success');
+                setTestResult('SC3.7: Performance Metrics', 'pass', 'Performance monitoring and metrics implemented');
+                
+            } catch (error) {
+                log(`❌ Performance metrics test failed: ${error.message}`, 'error');
+                setTestResult('SC3.7: Performance Metrics', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC3.8: Protocol error handling
+        async function testProtocolErrorHandling() {
+            log('Testing SC3.8: Protocol error handling and edge cases...', 'info');
+            setTestResult('SC3.8: Error Handling', 'pending', 'Testing...');
+            
+            try {
+                const { ErrorHandler } = await import('../src/quic-server.js');
+                
+                const errorHandler = new ErrorHandler();
+                let errorsHandled = 0;
+                
+                // Test connection timeout handling
+                try {
+                    await errorHandler.connectWithTimeout('https://nonexistent.example.com', 1000);
+                } catch (error) {
+                    if (error.message.includes('timeout') || error.message.includes('ENOTFOUND')) {
+                        errorsHandled++;
+                        log(`   ✅ Connection timeout handled correctly`, 'success');
+                    }
+                }
+                
+                // Test protocol fallback on failure
+                const fallbackResult = await errorHandler.connectWithFallback([
+                    'quic://localhost:9999',  // Should fail
+                    'https://localhost:8443', // Should work
+                    'http://localhost:8080'   // Fallback
+                ]);
+                
+                if (fallbackResult && fallbackResult.protocol !== 'quic') {
+                    errorsHandled++;
+                    log(`   ✅ Protocol fallback working: ${fallbackResult.protocol}`, 'success');
+                }
+                
+                // Test network interruption handling
+                const connection = await errorHandler.createResilientConnection('https://localhost:8443');
+                if (connection) {
+                    // Simulate network interruption
+                    connection.simulateNetworkInterruption();
+                    
+                    // Check if connection recovers
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    
+                    if (connection.isRecovering || connection.isConnected) {
+                        errorsHandled++;
+                        log(`   ✅ Network interruption recovery working`, 'success');
+                    }
+                }
+                
+                // Test graceful degradation
+                const degradationTest = await errorHandler.testGracefulDegradation();
+                if (degradationTest.success) {
+                    errorsHandled++;
+                    log(`   ✅ Graceful degradation working`, 'success');
+                }
+                
+                // Test detailed error reporting
+                const errorReport = await errorHandler.generateErrorReport();
+                if (errorReport && errorReport.errors && errorReport.errors.length >= 0) {
+                    log(`   📋 Error report generated: ${errorReport.errors.length} errors tracked`, 'success');
+                }
+                
+                if (errorsHandled >= 2) {
+                    log(`✅ Protocol error handling working (${errorsHandled} scenarios handled)`, 'success');
+                    setTestResult('SC3.8: Error Handling', 'pass', `Error handling working correctly (${errorsHandled}/4 tests passed)`);
+                } else {
+                    throw new Error(`Insufficient error handling (only ${errorsHandled} scenarios handled)`);
+                }
+                
+            } catch (error) {
+                log(`❌ Protocol error handling test failed: ${error.message}`, 'error');
+                setTestResult('SC3.8: Error Handling', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Helper function to generate test certificate
+        async function generateTestCertificate() {
+            // This would normally generate a real certificate
+            // For testing, we'll return a mock certificate
+            return {
+                cert: '-----BEGIN CERTIFICATE-----\nMOCK_CERTIFICATE\n-----END CERTIFICATE-----',
+                key: '-----BEGIN PRIVATE KEY-----\nMOCK_PRIVATE_KEY\n-----END PRIVATE KEY-----'
+            };
+        }
+
+        // Helper function to generate test key
+        async function generateTestKey() {
+            return '-----BEGIN PRIVATE KEY-----\nMOCK_PRIVATE_KEY\n-----END PRIVATE KEY-----';
+        }
+
+        // Run individual test
+        window.runSingleTest = async function(testName) {
+            log(`\n=== Running ${testName} ===`, 'info');
+            
+            try {
+                switch (testName) {
+                    case 'quicSupport':
+                        await testQuicSupport();
+                        break;
+                    case 'webTransport':
+                        await testWebTransport();
+                        break;
+                    case 'quicWebSocket':
+                        await testQuicWebSocket();
+                        break;
+                    case 'protocolAbstraction':
+                        await testProtocolAbstraction();
+                        break;
+                    case 'performanceMetrics':
+                        await testPerformanceMetrics();
+                        break;
+                    default:
+                        throw new Error(`Unknown test: ${testName}`);
+                }
+            } catch (error) {
+                log(`Test ${testName} failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Run all tests
+        window.runAllTests = async function() {
+            log('🚀 Starting Phase 3 Integration Tests\n', 'info');
+            
+            // Reset state
+            testResults.clear();
+            completedTests = 0;
+            activeConnections.clear();
+            performanceMetrics = { quicConnections: 0, webTransportStreams: 0, avgLatency: 0, throughput: 0 };
+            updateProgress();
+            updateTestResults();
+            updateMetrics();
+            updateConnectionStatus();
+            
+            const tests = [
+                { name: 'QUIC Support', func: testQuicSupport },
+                { name: 'WebTransport', func: testWebTransport },
+                { name: 'QUIC WebSocket', func: testQuicWebSocket },
+                { name: 'Advanced Networking', func: testAdvancedNetworking },
+                { name: 'Protocol Abstraction', func: testProtocolAbstraction },
+                { name: 'Security & Encryption', func: testSecurityEncryption },
+                { name: 'Performance Metrics', func: testPerformanceMetrics },
+                { name: 'Error Handling', func: testProtocolErrorHandling }
+            ];
+            
+            let passedTests = 0;
+            
+            for (const test of tests) {
+                try {
+                    log(`\n=== ${test.name} ===`, 'info');
+                    await test.func();
+                    passedTests++;
+                } catch (error) {
+                    log(`❌ ${test.name} failed: ${error.message}`, 'error');
+                }
+            }
+            
+            // Final results
+            log(`\n🏁 Phase 3 Integration Tests Complete`, 'info');
+            log(`✅ Passed: ${passedTests}/${tests.length}`, passedTests === tests.length ? 'success' : 'warning');
+            
+            if (passedTests === tests.length) {
+                log(`🎉 Phase 3 SUCCESS: All success criteria met!`, 'success');
+                log(`Ready to proceed to Phase 4: Performance & Production Features`, 'info');
+            } else {
+                log(`⚠️ Phase 3 INCOMPLETE: ${tests.length - passedTests} tests failed`, 'warning');
+                log(`Please fix failing tests before proceeding to Phase 4`, 'warning');
+            }
+        };
+
+        // Clear results
+        window.clearResults = function() {
+            document.getElementById('test-output').innerHTML = 'Test output cleared...\n';
+            testResults.clear();
+            completedTests = 0;
+            updateProgress();
+            updateTestResults();
+        };
+
+        // Refresh connections display
+        window.refreshConnections = function() {
+            updateConnectionStatus();
+        };
+
+        // Clear connections
+        window.clearConnections = function() {
+            activeConnections.clear();
+            updateConnectionStatus();
+            log('Active connections cleared', 'info');
+        };
+
+        // Check implementation status
+        async function checkImplementationStatus() {
+            const statusDiv = document.getElementById('implementation-status');
+            let html = '<h4>Implementation Status:</h4>';
+            
+            const checks = [
+                { name: 'QUIC Server', module: '../src/quic-server.js' },
+                { name: 'WebSocket Server', module: '../src/websocket-server.js' },
+                { name: 'TLS Server', module: '../src/tls-server.js' },
+                { name: '@matrixai/quic dependency', check: () => import('@matrixai/quic') },
+                { name: 'WebTransport API', check: () => window.WebTransport ? Promise.resolve() : Promise.reject('Not available') },
+                { name: 'Performance API', check: () => window.performance ? Promise.resolve() : Promise.reject('Not available') }
+            ];
+            
+            for (const check of checks) {
+                try {
+                    if (check.module) {
+                        await import(check.module);
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    } else if (check.check) {
+                        await check.check();
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    }
+                } catch (error) {
+                    html += `<p>❌ ${check.name}: ${error.message}</p>`;
+                }
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            log('Phase 3 Integration Test loaded', 'success');
+            checkImplementationStatus();
+            updateMetrics();
+        });
+    </script>
+</body>
+</html>
