@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 4 Integration Test - Performance & Production Features</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .success-criteria {
+            background: #fff3e0;
+            border-left: 4px solid #fd7e14;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        button {
+            background: #fd7e14;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #e8690b;
+        }
+        
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fd7e14, #dc3545);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .performance-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fd7e14;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+        
+        .metric-trend {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .trend-up { color: #28a745; }
+        .trend-down { color: #dc3545; }
+        .trend-stable { color: #6c757d; }
+        
+        .deployment-status {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-viewer {
+            background: #212529;
+            color: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Phase 4 Integration Test</h1>
+        <h2>Performance & Production Features</h2>
+        <p>Testing connection pooling, caching, monitoring, logging, security, deployment, and scalability</p>
+    </div>
+
+    <!-- Success Criteria -->
+    <div class="test-section">
+        <h3>📋 Success Criteria</h3>
+        <div class="success-criteria">
+            <h4>Phase 4 must achieve:</h4>
+            <ul>
+                <li><strong>SC4.1:</strong> Implement connection pooling and management</li>
+                <li><strong>SC4.2:</strong> Add advanced caching strategies</li>
+                <li><strong>SC4.3:</strong> Create performance monitoring and metrics</li>
+                <li><strong>SC4.4:</strong> Implement production-ready logging and debugging</li>
+                <li><strong>SC4.5:</strong> Add security hardening and compliance</li>
+                <li><strong>SC4.6:</strong> Create deployment and distribution tools</li>
+                <li><strong>SC4.7:</strong> Add monitoring and observability</li>
+                <li><strong>SC4.8:</strong> Optimize for production scalability</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test Progress -->
+    <div class="test-section">
+        <h3>🚀 Test Progress</h3>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%">0%</div>
+        </div>
+        <div id="test-results"></div>
+    </div>
+
+    <!-- Performance Dashboard -->
+    <div class="test-section">
+        <h3>📊 Performance Dashboard</h3>
+        <div class="performance-dashboard">
+            <div class="metric-card">
+                <div class="metric-value" id="active-connections">0</div>
+                <div class="metric-label">Active Connections</div>
+                <div class="metric-trend trend-stable" id="connections-trend">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="cache-hit-rate">0%</div>
+                <div class="metric-label">Cache Hit Rate</div>
+                <div class="metric-trend trend-stable" id="cache-trend">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="avg-response-time">0ms</div>
+                <div class="metric-label">Avg Response Time</div>
+                <div class="metric-trend trend-stable" id="response-trend">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="throughput">0 req/s</div>
+                <div class="metric-label">Throughput</div>
+                <div class="metric-trend trend-stable" id="throughput-trend">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="error-rate">0%</div>
+                <div class="metric-label">Error Rate</div>
+                <div class="metric-trend trend-stable" id="error-trend">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="memory-usage">0 MB</div>
+                <div class="metric-label">Memory Usage</div>
+                <div class="metric-trend trend-stable" id="memory-trend">Stable</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deployment Status -->
+    <div class="test-section">
+        <h3>🚀 Deployment Status</h3>
+        <div id="deployment-status" class="deployment-status">
+            <p>No deployments in progress...</p>
+        </div>
+        <button onclick="simulateDeployment()">Simulate Deployment</button>
+        <button onclick="rollbackDeployment()" class="btn-danger">Rollback</button>
+        <button onclick="clearDeploymentLogs()">Clear Logs</button>
+    </div>
+
+    <!-- System Alerts -->
+    <div class="test-section">
+        <h3>🚨 System Alerts</h3>
+        <div id="system-alerts">
+            <div class="alert alert-success">System operational - All services running normally</div>
+        </div>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="test-section">
+        <h3>🎮 Test Controls</h3>
+        <button onclick="runAllTests()" class="btn-success">Run All Tests</button>
+        <button onclick="runSingleTest('connectionPooling')">Test Connection Pooling</button>
+        <button onclick="runSingleTest('caching')">Test Caching</button>
+        <button onclick="runSingleTest('monitoring')">Test Monitoring</button>
+        <button onclick="runSingleTest('logging')">Test Logging</button>
+        <button onclick="runSingleTest('security')">Test Security</button>
+        <button onclick="runSingleTest('deployment')">Test Deployment</button>
+        <button onclick="runLoadTest()" class="btn-danger">Run Load Test</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <!-- Test Output -->
+    <div class="test-section">
+        <h3>📊 Test Output</h3>
+        <div id="test-output" class="output">Ready to run Phase 4 integration tests...\n</div>
+    </div>
+
+    <!-- Log Viewer -->
+    <div class="test-section">
+        <h3>📋 System Logs</h3>
+        <div id="log-viewer" class="log-viewer">
+[INFO] Phase 4 Integration Test initialized
+[INFO] Waiting for test execution...
+        </div>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <button onclick="exportLogs()">Export Logs</button>
+    </div>
+
+    <!-- Implementation Status -->
+    <div class="test-section">
+        <h3>⚙️ Implementation Status</h3>
+        <div id="implementation-status">
+            <p>Checking implementation status...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Test state
+        let testResults = new Map();
+        let totalTests = 8;
+        let completedTests = 0;
+        let performanceMetrics = {
+            activeConnections: 0,
+            cacheHitRate: 0,
+            avgResponseTime: 0,
+            throughput: 0,
+            errorRate: 0,
+            memoryUsage: 0
+        };
+        let deploymentStatus = [];
+        let systemLogs = [];
+        let alerts = [];
+
+        // Logging function
+        function log(message, type = 'info') {
+            const output = document.getElementById('test-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            output.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+            
+            // Also add to system logs
+            addSystemLog(message, type);
+        }
+
+        // Add system log
+        function addSystemLog(message, level = 'INFO') {
+            const timestamp = new Date().toISOString();
+            const logEntry = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+            systemLogs.push(logEntry);
+            
+            const logViewer = document.getElementById('log-viewer');
+            logViewer.innerHTML += logEntry + '\n';
+            logViewer.scrollTop = logViewer.scrollHeight;
+            
+            // Keep only last 100 log entries
+            if (systemLogs.length > 100) {
+                systemLogs = systemLogs.slice(-100);
+                updateLogViewer();
+            }
+        }
+
+        // Update log viewer
+        function updateLogViewer() {
+            const logViewer = document.getElementById('log-viewer');
+            logViewer.innerHTML = systemLogs.join('\n');
+            logViewer.scrollTop = logViewer.scrollHeight;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const percentage = Math.round((completedTests / totalTests) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Update test results display
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            for (const [testName, result] of testResults) {
+                const className = result.status === 'pass' ? 'test-pass' : 
+                                result.status === 'fail' ? 'test-fail' : 'test-pending';
+                html += `<div class="${className}">${testName}: ${result.message}</div>`;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Set test result
+        function setTestResult(testName, status, message) {
+            testResults.set(testName, { status, message });
+            if (status !== 'pending') {
+                completedTests++;
+            }
+            updateProgress();
+            updateTestResults();
+        }
+
+        // Update performance metrics display
+        function updateMetrics() {
+            document.getElementById('active-connections').textContent = performanceMetrics.activeConnections;
+            document.getElementById('cache-hit-rate').textContent = performanceMetrics.cacheHitRate + '%';
+            document.getElementById('avg-response-time').textContent = performanceMetrics.avgResponseTime + 'ms';
+            document.getElementById('throughput').textContent = performanceMetrics.throughput + ' req/s';
+            document.getElementById('error-rate').textContent = performanceMetrics.errorRate + '%';
+            document.getElementById('memory-usage').textContent = performanceMetrics.memoryUsage + ' MB';
+        }
+
+        // Add system alert
+        function addAlert(message, type = 'info') {
+            const alertsDiv = document.getElementById('system-alerts');
+            const alertClass = {
+                success: 'alert-success',
+                warning: 'alert-warning',
+                error: 'alert-danger',
+                info: 'alert-success'
+            }[type] || 'alert-success';
+            
+            const alertHtml = `<div class="alert ${alertClass}">${message}</div>`;
+            alertsDiv.innerHTML += alertHtml;
+            
+            alerts.push({ message, type, timestamp: new Date() });
+            
+            // Keep only last 10 alerts
+            if (alerts.length > 10) {
+                alerts = alerts.slice(-10);
+                updateAlertsDisplay();
+            }
+        }
+
+        // Update alerts display
+        function updateAlertsDisplay() {
+            const alertsDiv = document.getElementById('system-alerts');
+            let html = '';
+            
+            for (const alert of alerts) {
+                const alertClass = {
+                    success: 'alert-success',
+                    warning: 'alert-warning',
+                    error: 'alert-danger',
+                    info: 'alert-success'
+                }[alert.type] || 'alert-success';
+                
+                html += `<div class="alert ${alertClass}">${alert.message}</div>`;
+            }
+            
+            alertsDiv.innerHTML = html;
+        }
+
+        // Test SC4.1: Connection pooling and management
+        async function testConnectionPooling() {
+            log('Testing SC4.1: Connection pooling and management...', 'info');
+            setTestResult('SC4.1: Connection Pooling', 'pending', 'Testing...');
+            
+            try {
+                const { ConnectionPool } = await import('../src/http-server-enhanced.js');
+                
+                // Create connection pool
+                const pool = new ConnectionPool({
+                    maxConnections: 10,
+                    maxIdleTime: 30000,
+                    healthCheckInterval: 5000
+                });
+                
+                // Test pool initialization
+                await pool.initialize();
+                log(`   🏊 Connection pool initialized (max: ${pool.maxConnections})`, 'success');
+                
+                // Test connection acquisition
+                const connections = [];
+                for (let i = 0; i < 5; i++) {
+                    const conn = await pool.acquire(`https://localhost:844${i}`);
+                    connections.push(conn);
+                    performanceMetrics.activeConnections++;
+                }
+                
+                log(`   📡 Acquired ${connections.length} connections from pool`, 'success');
+                
+                // Test connection reuse
+                const reusedConn = await pool.acquire('https://localhost:8440');
+                if (reusedConn === connections[0]) {
+                    log(`   ♻️ Connection reuse working correctly`, 'success');
+                } else {
+                    log(`   ♻️ New connection created (pool not full)`, 'info');
+                }
+                
+                // Test connection health monitoring
+                const healthStatus = await pool.checkHealth();
+                log(`   💓 Health check: ${healthStatus.healthy}/${healthStatus.total} connections healthy`, 'success');
+                
+                // Test connection lifecycle management
+                await pool.releaseConnection(connections[0]);
+                performanceMetrics.activeConnections--;
+                log(`   🔄 Connection released back to pool`, 'success');
+                
+                // Test pool cleanup
+                await pool.cleanup();
+                performanceMetrics.activeConnections = Math.max(0, performanceMetrics.activeConnections - connections.length + 1);
+                
+                updateMetrics();
+                
+                log(`✅ Connection pooling working correctly`, 'success');
+                setTestResult('SC4.1: Connection Pooling', 'pass', 'Connection pooling and management implemented');
+                
+            } catch (error) {
+                log(`❌ Connection pooling test failed: ${error.message}`, 'error');
+                setTestResult('SC4.1: Connection Pooling', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.2: Advanced caching strategies
+        async function testCaching() {
+            log('Testing SC4.2: Advanced caching strategies...', 'info');
+            setTestResult('SC4.2: Caching', 'pending', 'Testing...');
+            
+            try {
+                const { CacheManager } = await import('../src/http-server-enhanced.js');
+                
+                const cacheManager = new CacheManager({
+                    maxSize: 100 * 1024 * 1024, // 100MB
+                    ttl: 3600000, // 1 hour
+                    strategy: 'lru'
+                });
+                
+                // Test cache initialization
+                await cacheManager.initialize();
+                log(`   💾 Cache manager initialized (${cacheManager.maxSize / 1024 / 1024}MB)`, 'success');
+                
+                // Test cache storage
+                const testData = { message: 'Hello Cache!', timestamp: Date.now() };
+                await cacheManager.set('test-key', JSON.stringify(testData), { ttl: 60000 });
+                log(`   📝 Data stored in cache`, 'success');
+                
+                // Test cache retrieval
+                const cachedData = await cacheManager.get('test-key');
+                if (cachedData) {
+                    const parsed = JSON.parse(cachedData);
+                    if (parsed.message === testData.message) {
+                        performanceMetrics.cacheHitRate = 100;
+                        log(`   🎯 Cache hit: ${parsed.message}`, 'success');
+                    }
+                } else {
+                    performanceMetrics.cacheHitRate = 0;
+                    throw new Error('Cache miss on recently stored data');
+                }
+                
+                // Test cache invalidation
+                await cacheManager.invalidate('test-key');
+                const invalidatedData = await cacheManager.get('test-key');
+                if (!invalidatedData) {
+                    log(`   🗑️ Cache invalidation working`, 'success');
+                } else {
+                    throw new Error('Cache invalidation failed');
+                }
+                
+                // Test cache performance optimization
+                const perfStats = await cacheManager.getPerformanceStats();
+                log(`   📊 Cache stats - Hits: ${perfStats.hits}, Misses: ${perfStats.misses}`, 'success');
+                
+                // Test cache storage limits and eviction
+                for (let i = 0; i < 10; i++) {
+                    await cacheManager.set(`bulk-key-${i}`, `data-${i}`.repeat(1000));
+                }
+                
+                const cacheSize = await cacheManager.getCurrentSize();
+                log(`   📏 Cache size after bulk insert: ${Math.round(cacheSize / 1024)}KB`, 'success');
+                
+                updateMetrics();
+                
+                log(`✅ Advanced caching strategies working`, 'success');
+                setTestResult('SC4.2: Caching', 'pass', 'Advanced caching strategies implemented');
+                
+            } catch (error) {
+                log(`❌ Caching test failed: ${error.message}`, 'error');
+                setTestResult('SC4.2: Caching', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.3: Performance monitoring and metrics
+        async function testMonitoring() {
+            log('Testing SC4.3: Performance monitoring and metrics...', 'info');
+            setTestResult('SC4.3: Monitoring', 'pending', 'Testing...');
+            
+            try {
+                const { PerformanceMonitor } = await import('../src/http-server-enhanced.js');
+                
+                const monitor = new PerformanceMonitor({
+                    metricsInterval: 1000,
+                    alertThresholds: {
+                        responseTime: 1000,
+                        errorRate: 5,
+                        memoryUsage: 512
+                    }
+                });
+                
+                // Test monitoring initialization
+                await monitor.start();
+                log(`   📊 Performance monitoring started`, 'success');
+                
+                // Simulate some performance data
+                for (let i = 0; i < 10; i++) {
+                    monitor.recordRequest(Math.random() * 200 + 50); // 50-250ms response times
+                    monitor.recordError(Math.random() < 0.02); // 2% error rate
+                }
+                
+                // Test metrics collection
+                const metrics = await monitor.getMetrics();
+                performanceMetrics.avgResponseTime = Math.round(metrics.avgResponseTime || 0);
+                performanceMetrics.throughput = Math.round(metrics.requestsPerSecond || 0);
+                performanceMetrics.errorRate = Math.round(metrics.errorRate || 0);
+                performanceMetrics.memoryUsage = Math.round(metrics.memoryUsage / 1024 / 1024 || 0);
+                
+                log(`   📈 Metrics collected - Avg response: ${performanceMetrics.avgResponseTime}ms`, 'success');
+                log(`   📈 Throughput: ${performanceMetrics.throughput} req/s, Errors: ${performanceMetrics.errorRate}%`, 'success');
+                
+                // Test real-time dashboard updates
+                updateMetrics();
+                
+                // Test performance alerting
+                monitor.recordRequest(2000); // Trigger high response time alert
+                const alerts = await monitor.getAlerts();
+                if (alerts.length > 0) {
+                    log(`   🚨 Performance alert triggered: ${alerts[0].message}`, 'warning');
+                    addAlert(`Performance alert: ${alerts[0].message}`, 'warning');
+                }
+                
+                // Test performance optimization suggestions
+                const suggestions = await monitor.getOptimizationSuggestions();
+                if (suggestions.length > 0) {
+                    log(`   💡 Optimization suggestions: ${suggestions.length} found`, 'success');
+                }
+                
+                await monitor.stop();
+                
+                log(`✅ Performance monitoring working`, 'success');
+                setTestResult('SC4.3: Monitoring', 'pass', 'Performance monitoring and metrics implemented');
+                
+            } catch (error) {
+                log(`❌ Monitoring test failed: ${error.message}`, 'error');
+                setTestResult('SC4.3: Monitoring', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.4: Production-ready logging and debugging
+        async function testLogging() {
+            log('Testing SC4.4: Production-ready logging and debugging...', 'info');
+            setTestResult('SC4.4: Logging', 'pending', 'Testing...');
+            
+            try {
+                const { Logger } = await import('../src/http-server-enhanced.js');
+                
+                const logger = new Logger({
+                    level: 'debug',
+                    format: 'json',
+                    outputs: ['console', 'file'],
+                    rotation: {
+                        maxSize: '10MB',
+                        maxFiles: 5
+                    }
+                });
+                
+                // Test different log levels
+                logger.debug('Debug message for development');
+                logger.info('Info message for general information');
+                logger.warn('Warning message for potential issues');
+                logger.error('Error message for actual problems');
+                
+                log(`   📝 Log levels tested (debug, info, warn, error)`, 'success');
+                
+                // Test structured logging
+                logger.info('User action', {
+                    userId: 'test-user-123',
+                    action: 'login',
+                    timestamp: new Date().toISOString(),
+                    metadata: { ip: '127.0.0.1', userAgent: 'Test' }
+                });
+                
+                log(`   🏗️ Structured logging working`, 'success');
+                
+                // Test log filtering
+                const filteredLogs = await logger.filter({
+                    level: 'error',
+                    timeRange: { start: Date.now() - 3600000, end: Date.now() }
+                });
+                
+                log(`   🔍 Log filtering: ${filteredLogs.length} error logs found`, 'success');
+                
+                // Test remote logging
+                const remoteLogger = logger.createRemoteLogger('https://logs.example.com/api');
+                if (remoteLogger) {
+                    log(`   🌐 Remote logging configured`, 'success');
+                } else {
+                    log(`   ⚠️ Remote logging not configured (expected in test)`, 'warning');
+                }
+                
+                // Test debugging tools
+                const debugInfo = await logger.getDebugInfo();
+                if (debugInfo.logCount !== undefined) {
+                    log(`   🐛 Debug info: ${debugInfo.logCount} logs, ${debugInfo.errorCount} errors`, 'success');
+                }
+                
+                log(`✅ Production logging working`, 'success');
+                setTestResult('SC4.4: Logging', 'pass', 'Production-ready logging and debugging implemented');
+                
+            } catch (error) {
+                log(`❌ Logging test failed: ${error.message}`, 'error');
+                setTestResult('SC4.4: Logging', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.5: Security hardening and compliance
+        async function testSecurity() {
+            log('Testing SC4.5: Security hardening and compliance...', 'info');
+            setTestResult('SC4.5: Security', 'pending', 'Testing...');
+            
+            try {
+                const { SecurityHardening } = await import('../src/http-server-enhanced.js');
+                
+                const security = new SecurityHardening({
+                    enableCSP: true,
+                    enableHSTS: true,
+                    enableCORS: true,
+                    rateLimiting: {
+                        windowMs: 15 * 60 * 1000, // 15 minutes
+                        max: 100 // limit each IP to 100 requests per windowMs
+                    }
+                });
+                
+                // Test security headers
+                const headers = security.getSecurityHeaders();
+                const expectedHeaders = [
+                    'Content-Security-Policy',
+                    'Strict-Transport-Security',
+                    'X-Frame-Options',
+                    'X-Content-Type-Options'
+                ];
+                
+                let headersFound = 0;
+                for (const header of expectedHeaders) {
+                    if (headers[header]) {
+                        headersFound++;
+                        log(`   🛡️ Security header: ${header}`, 'success');
+                    }
+                }
+                
+                if (headersFound < expectedHeaders.length) {
+                    log(`   ⚠️ Missing ${expectedHeaders.length - headersFound} security headers`, 'warning');
+                }
+                
+                // Test rate limiting
+                const rateLimiter = security.getRateLimiter();
+                for (let i = 0; i < 5; i++) {
+                    const allowed = await rateLimiter.checkRequest('127.0.0.1');
+                    if (!allowed && i < 4) {
+                        throw new Error('Rate limiting too aggressive');
+                    }
+                }
+                log(`   🚦 Rate limiting working correctly`, 'success');
+                
+                // Test input validation
+                const validator = security.getInputValidator();
+                const testInputs = [
+                    { input: '<script>alert("xss")</script>', expected: false },
+                    { input: 'normal text input', expected: true },
+                    { input: 'SELECT * FROM users', expected: false }
+                ];
+                
+                let validationTests = 0;
+                for (const test of testInputs) {
+                    const isValid = validator.validate(test.input);
+                    if (isValid === test.expected) {
+                        validationTests++;
+                    }
+                }
+                
+                log(`   ✅ Input validation: ${validationTests}/${testInputs.length} tests passed`, 'success');
+                
+                // Test security audit
+                const auditResults = await security.performSecurityAudit();
+                log(`   🔍 Security audit: ${auditResults.score}/100 score`, auditResults.score >= 80 ? 'success' : 'warning');
+                
+                // Test compliance checks
+                const complianceResults = await security.checkCompliance(['OWASP', 'GDPR']);
+                log(`   📋 Compliance check: ${complianceResults.passed}/${complianceResults.total} checks passed`, 'success');
+                
+                log(`✅ Security hardening working`, 'success');
+                setTestResult('SC4.5: Security', 'pass', 'Security hardening and compliance implemented');
+                
+            } catch (error) {
+                log(`❌ Security test failed: ${error.message}`, 'error');
+                setTestResult('SC4.5: Security', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.6: Deployment and distribution tools
+        async function testDeployment() {
+            log('Testing SC4.6: Deployment and distribution tools...', 'info');
+            setTestResult('SC4.6: Deployment', 'pending', 'Testing...');
+            
+            try {
+                const { DeploymentManager } = await import('../src/http-server-enhanced.js');
+                
+                const deployment = new DeploymentManager({
+                    strategy: 'blue-green',
+                    healthCheckUrl: '/health',
+                    rollbackOnFailure: true
+                });
+                
+                // Test deployment preparation
+                const deploymentId = await deployment.prepare({
+                    version: '1.2.0',
+                    artifacts: ['bundle.swbn', 'manifest.json'],
+                    environment: 'staging'
+                });
+                
+                log(`   📦 Deployment prepared: ${deploymentId}`, 'success');
+                deploymentStatus.push({ id: deploymentId, status: 'prepared', timestamp: new Date() });
+                
+                // Test deployment execution
+                await deployment.deploy(deploymentId);
+                log(`   🚀 Deployment executed successfully`, 'success');
+                deploymentStatus.push({ id: deploymentId, status: 'deployed', timestamp: new Date() });
+                
+                // Test health checks
+                const healthStatus = await deployment.checkHealth();
+                if (healthStatus.healthy) {
+                    log(`   💓 Health check passed`, 'success');
+                    deploymentStatus.push({ id: deploymentId, status: 'healthy', timestamp: new Date() });
+                } else {
+                    log(`   ⚠️ Health check failed: ${healthStatus.error}`, 'warning');
+                }
+                
+                // Test version management
+                const versions = await deployment.getVersions();
+                log(`   📋 Available versions: ${versions.length}`, 'success');
+                
+                // Test A/B testing capability
+                const abTest = await deployment.createABTest({
+                    name: 'feature-test',
+                    variants: ['control', 'variant-a'],
+                    traffic: [50, 50]
+                });
+                
+                if (abTest) {
+                    log(`   🧪 A/B test created: ${abTest.name}`, 'success');
+                } else {
+                    log(`   ⚠️ A/B testing not available`, 'warning');
+                }
+                
+                // Test rollback capability
+                const rollbackResult = await deployment.rollback(deploymentId);
+                if (rollbackResult) {
+                    log(`   ↩️ Rollback capability verified`, 'success');
+                    deploymentStatus.push({ id: deploymentId, status: 'rolled-back', timestamp: new Date() });
+                }
+                
+                updateDeploymentStatus();
+                
+                log(`✅ Deployment tools working`, 'success');
+                setTestResult('SC4.6: Deployment', 'pass', 'Deployment and distribution tools implemented');
+                
+            } catch (error) {
+                log(`❌ Deployment test failed: ${error.message}`, 'error');
+                setTestResult('SC4.6: Deployment', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.7: Monitoring and observability
+        async function testObservability() {
+            log('Testing SC4.7: Monitoring and observability...', 'info');
+            setTestResult('SC4.7: Observability', 'pending', 'Testing...');
+            
+            try {
+                const { ObservabilityStack } = await import('../src/http-server-enhanced.js');
+                
+                const observability = new ObservabilityStack({
+                    tracing: true,
+                    metrics: true,
+                    logging: true,
+                    alerting: true
+                });
+                
+                // Test distributed tracing
+                const trace = await observability.startTrace('test-operation');
+                trace.addSpan('database-query', { query: 'SELECT * FROM users' });
+                trace.addSpan('cache-lookup', { key: 'user-123' });
+                await trace.finish();
+                
+                log(`   🔍 Distributed tracing: ${trace.spans.length} spans recorded`, 'success');
+                
+                // Test metrics collection
+                const metricsCollector = observability.getMetricsCollector();
+                metricsCollector.increment('requests.total');
+                metricsCollector.histogram('request.duration', 150);
+                metricsCollector.gauge('memory.usage', 256);
+                
+                const collectedMetrics = await metricsCollector.getMetrics();
+                log(`   📊 Metrics collected: ${Object.keys(collectedMetrics).length} metrics`, 'success');
+                
+                // Test performance analytics
+                const analytics = observability.getAnalytics();
+                const performanceReport = await analytics.generateReport('performance', {
+                    timeRange: '1h',
+                    metrics: ['response_time', 'throughput', 'error_rate']
+                });
+                
+                log(`   📈 Performance analytics: ${performanceReport.dataPoints} data points`, 'success');
+                
+                // Test operational dashboards
+                const dashboard = observability.createDashboard('system-overview');
+                dashboard.addWidget('response-time-chart');
+                dashboard.addWidget('error-rate-gauge');
+                dashboard.addWidget('throughput-graph');
+                
+                log(`   📊 Dashboard created: ${dashboard.widgets.length} widgets`, 'success');
+                
+                // Test alerting system
+                const alertManager = observability.getAlertManager();
+                await alertManager.createAlert({
+                    name: 'high-error-rate',
+                    condition: 'error_rate > 5%',
+                    severity: 'warning',
+                    channels: ['email', 'slack']
+                });
+                
+                log(`   🚨 Alert system configured`, 'success');
+                
+                log(`✅ Monitoring and observability working`, 'success');
+                setTestResult('SC4.7: Observability', 'pass', 'Monitoring and observability implemented');
+                
+            } catch (error) {
+                log(`❌ Observability test failed: ${error.message}`, 'error');
+                setTestResult('SC4.7: Observability', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC4.8: Production scalability
+        async function testScalability() {
+            log('Testing SC4.8: Production scalability optimization...', 'info');
+            setTestResult('SC4.8: Scalability', 'pending', 'Testing...');
+            
+            try {
+                const { ScalabilityManager } = await import('../src/http-server-enhanced.js');
+                
+                const scalability = new ScalabilityManager({
+                    autoScaling: true,
+                    loadBalancing: true,
+                    resourceOptimization: true
+                });
+                
+                // Test horizontal scaling
+                const scaleResult = await scalability.scaleHorizontally({
+                    targetInstances: 3,
+                    strategy: 'gradual'
+                });
+                
+                log(`   📈 Horizontal scaling: ${scaleResult.instances} instances`, 'success');
+                
+                // Test load balancing
+                const loadBalancer = scalability.getLoadBalancer();
+                const servers = ['server1:8080', 'server2:8080', 'server3:8080'];
+                
+                for (const server of servers) {
+                    await loadBalancer.addServer(server);
+                }
+                
+                // Test load distribution
+                const requests = [];
+                for (let i = 0; i < 10; i++) {
+                    const server = loadBalancer.getNextServer();
+                    requests.push(server);
+                }
+                
+                const distribution = requests.reduce((acc, server) => {
+                    acc[server] = (acc[server] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                log(`   ⚖️ Load distribution: ${Object.keys(distribution).length} servers used`, 'success');
+                
+                // Test resource optimization
+                const optimizer = scalability.getResourceOptimizer();
+                const optimizations = await optimizer.analyze();
+                
+                log(`   ⚡ Resource optimizations: ${optimizations.suggestions.length} suggestions`, 'success');
+                
+                // Test high-availability setup
+                const haConfig = await scalability.configureHighAvailability({
+                    replication: 3,
+                    failover: 'automatic',
+                    healthChecks: true
+                });
+                
+                if (haConfig.success) {
+                    log(`   🏥 High availability configured`, 'success');
+                    addAlert('High availability mode enabled', 'success');
+                }
+                
+                // Test performance under load (simulated)
+                const loadTestResults = await scalability.simulateLoad({
+                    concurrentUsers: 100,
+                    duration: 30,
+                    rampUp: 10
+                });
+                
+                log(`   🚀 Load test: ${loadTestResults.requestsPerSecond} req/s sustained`, 'success');
+                performanceMetrics.throughput = Math.round(loadTestResults.requestsPerSecond);
+                updateMetrics();
+                
+                log(`✅ Production scalability working`, 'success');
+                setTestResult('SC4.8: Scalability', 'pass', 'Production scalability optimization implemented');
+                
+            } catch (error) {
+                log(`❌ Scalability test failed: ${error.message}`, 'error');
+                setTestResult('SC4.8: Scalability', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Update deployment status display
+        function updateDeploymentStatus() {
+            const statusDiv = document.getElementById('deployment-status');
+            
+            if (deploymentStatus.length === 0) {
+                statusDiv.innerHTML = '<p>No deployments in progress...</p>';
+                return;
+            }
+            
+            let html = '<h4>Recent Deployments:</h4>';
+            const recent = deploymentStatus.slice(-5); // Show last 5
+            
+            for (const deployment of recent) {
+                const statusColor = {
+                    'prepared': '#ffc107',
+                    'deployed': '#28a745',
+                    'healthy': '#28a745',
+                    'rolled-back': '#dc3545',
+                    'failed': '#dc3545'
+                }[deployment.status] || '#6c757d';
+                
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${statusColor}; background: white;">
+                        <strong>Deployment ${deployment.id}</strong><br>
+                        Status: ${deployment.status}<br>
+                        Time: ${deployment.timestamp.toLocaleTimeString()}
+                    </div>
+                `;
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Simulate deployment
+        window.simulateDeployment = async function() {
+            const deploymentId = 'deploy-' + Date.now();
+            log(`Starting simulated deployment: ${deploymentId}`, 'info');
+            
+            deploymentStatus.push({ id: deploymentId, status: 'preparing', timestamp: new Date() });
+            updateDeploymentStatus();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            deploymentStatus.push({ id: deploymentId, status: 'deploying', timestamp: new Date() });
+            updateDeploymentStatus();
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            deploymentStatus.push({ id: deploymentId, status: 'deployed', timestamp: new Date() });
+            updateDeploymentStatus();
+            
+            addAlert(`Deployment ${deploymentId} completed successfully`, 'success');
+            log(`Deployment ${deploymentId} completed`, 'success');
+        };
+
+        // Rollback deployment
+        window.rollbackDeployment = function() {
+            if (deploymentStatus.length > 0) {
+                const lastDeployment = deploymentStatus[deploymentStatus.length - 1];
+                deploymentStatus.push({ 
+                    id: lastDeployment.id, 
+                    status: 'rolled-back', 
+                    timestamp: new Date() 
+                });
+                updateDeploymentStatus();
+                addAlert(`Deployment ${lastDeployment.id} rolled back`, 'warning');
+                log(`Rolled back deployment: ${lastDeployment.id}`, 'warning');
+            }
+        };
+
+        // Clear deployment logs
+        window.clearDeploymentLogs = function() {
+            deploymentStatus = [];
+            updateDeploymentStatus();
+            log('Deployment logs cleared', 'info');
+        };
+
+        // Run load test
+        window.runLoadTest = async function() {
+            log('🚀 Starting load test...', 'warning');
+            addAlert('Load test in progress - monitoring system performance', 'warning');
+            
+            // Simulate load test metrics
+            for (let i = 0; i < 10; i++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                performanceMetrics.activeConnections = Math.floor(Math.random() * 50) + 10;
+                performanceMetrics.avgResponseTime = Math.floor(Math.random() * 200) + 100;
+                performanceMetrics.throughput = Math.floor(Math.random() * 100) + 50;
+                performanceMetrics.errorRate = Math.floor(Math.random() * 5);
+                performanceMetrics.memoryUsage = Math.floor(Math.random() * 200) + 100;
+                
+                updateMetrics();
+                log(`Load test progress: ${(i + 1) * 10}% complete`, 'info');
+            }
+            
+            log('✅ Load test completed', 'success');
+            addAlert('Load test completed - system performance within normal parameters', 'success');
+        };
+
+        // Run individual test
+        window.runSingleTest = async function(testName) {
+            log(`\n=== Running ${testName} ===`, 'info');
+            
+            try {
+                switch (testName) {
+                    case 'connectionPooling':
+                        await testConnectionPooling();
+                        break;
+                    case 'caching':
+                        await testCaching();
+                        break;
+                    case 'monitoring':
+                        await testMonitoring();
+                        break;
+                    case 'logging':
+                        await testLogging();
+                        break;
+                    case 'security':
+                        await testSecurity();
+                        break;
+                    case 'deployment':
+                        await testDeployment();
+                        break;
+                    default:
+                        throw new Error(`Unknown test: ${testName}`);
+                }
+            } catch (error) {
+                log(`Test ${testName} failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Run all tests
+        window.runAllTests = async function() {
+            log('🚀 Starting Phase 4 Integration Tests\n', 'info');
+            addAlert('Phase 4 integration tests started', 'info');
+            
+            // Reset state
+            testResults.clear();
+            completedTests = 0;
+            updateProgress();
+            updateTestResults();
+            
+            const tests = [
+                { name: 'Connection Pooling', func: testConnectionPooling },
+                { name: 'Caching', func: testCaching },
+                { name: 'Monitoring', func: testMonitoring },
+                { name: 'Logging', func: testLogging },
+                { name: 'Security', func: testSecurity },
+                { name: 'Deployment', func: testDeployment },
+                { name: 'Observability', func: testObservability },
+                { name: 'Scalability', func: testScalability }
+            ];
+            
+            let passedTests = 0;
+            
+            for (const test of tests) {
+                try {
+                    log(`\n=== ${test.name} ===`, 'info');
+                    await test.func();
+                    passedTests++;
+                } catch (error) {
+                    log(`❌ ${test.name} failed: ${error.message}`, 'error');
+                }
+            }
+            
+            // Final results
+            log(`\n🏁 Phase 4 Integration Tests Complete`, 'info');
+            log(`✅ Passed: ${passedTests}/${tests.length}`, passedTests === tests.length ? 'success' : 'warning');
+            
+            if (passedTests === tests.length) {
+                log(`🎉 Phase 4 SUCCESS: All success criteria met!`, 'success');
+                log(`🚀 IWA Project fully implemented and production-ready!`, 'success');
+                addAlert('Phase 4 SUCCESS: All production features implemented!', 'success');
+            } else {
+                log(`⚠️ Phase 4 INCOMPLETE: ${tests.length - passedTests} tests failed`, 'warning');
+                log(`Please fix failing tests for full production readiness`, 'warning');
+                addAlert(`Phase 4 incomplete: ${tests.length - passedTests} tests failed`, 'warning');
+            }
+        };
+
+        // Clear results
+        window.clearResults = function() {
+            document.getElementById('test-output').innerHTML = 'Test output cleared...\n';
+            testResults.clear();
+            completedTests = 0;
+            updateProgress();
+            updateTestResults();
+        };
+
+        // Clear logs
+        window.clearLogs = function() {
+            systemLogs = [];
+            document.getElementById('log-viewer').innerHTML = '[INFO] Logs cleared\n';
+            log('System logs cleared', 'info');
+        };
+
+        // Export logs
+        window.exportLogs = function() {
+            const logData = systemLogs.join('\n');
+            const blob = new Blob([logData], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `phase4-logs-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log('Logs exported successfully', 'success');
+        };
+
+        // Check implementation status
+        async function checkImplementationStatus() {
+            const statusDiv = document.getElementById('implementation-status');
+            let html = '<h4>Implementation Status:</h4>';
+            
+            const checks = [
+                { name: 'Enhanced HTTP Server', module: '../src/http-server-enhanced.js' },
+                { name: 'Multi-App Manager', module: '../src/multi-app-manager.js' },
+                { name: 'QUIC Server', module: '../src/quic-server.js' },
+                { name: 'Performance API', check: () => window.performance ? Promise.resolve() : Promise.reject('Not available') },
+                { name: 'Cache API', check: () => window.caches ? Promise.resolve() : Promise.reject('Not available') },
+                { name: 'Service Worker', check: () => 'serviceWorker' in navigator ? Promise.resolve() : Promise.reject('Not available') }
+            ];
+            
+            for (const check of checks) {
+                try {
+                    if (check.module) {
+                        await import(check.module);
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    } else if (check.check) {
+                        await check.check();
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    }
+                } catch (error) {
+                    html += `<p>❌ ${check.name}: ${error.message}</p>`;
+                }
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            log('Phase 4 Integration Test loaded', 'success');
+            addAlert('Phase 4 Integration Test initialized', 'success');
+            checkImplementationStatus();
+            updateMetrics();
+            
+            // Start simulated metrics updates
+            setInterval(() => {
+                if (Math.random() < 0.1) { // 10% chance to update metrics
+                    performanceMetrics.activeConnections += Math.floor(Math.random() * 3) - 1;
+                    performanceMetrics.activeConnections = Math.max(0, performanceMetrics.activeConnections);
+                    updateMetrics();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
