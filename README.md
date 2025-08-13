@@ -1,41 +1,13 @@
 <div align="center">
+<img width="225" height="225" alt="image (4)" src="https://github.com/user-attachments/assets/3538cfec-d5aa-4fa7-8d36-c8a248689fcc" />
 
-```
-                                                  
-                                                  
-     ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒      
-   ▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒    
-  ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███▓▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░██▒░░░█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░▒░░░░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓░░░░░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▒░░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██░░░░░████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██░░░░░█░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██░░░░▒██░░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓▓██▓░░░░▓███░░░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓▓▓▓▓██▒░░░░▓█▓▓██▒░░░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓████████▒░░░▒████████▓░░░░█████████▓▓▓▓▓▒  
- ▒▓▓▓▓█▒░░░░░░░░░░░░░░░░░░░░▓█░░░░░░░░░░░▒█▓▓▓▓▒  
- ▒▓▓▓▓█▒░░░░░░░░░░░░░░░░░░░░░█▓░░░░░░░░░░▓█▓▓▓▓▒  
- ▒▓▓▓▓██████████████████████████░░░░██████▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓██░░░░░█▓▓▓▓▓▓▓▓▓▓▓▓▓▓██░░░░░██▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓█░░░░▒██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██░░░░░█▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓██▒▒███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▒▓██▓▓▓▓▓▓▓▒  
- ▒▓▓▓▓▓▓▓▓█████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▓▓▓▓▓▓▓▓▒  
-  ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒  
-   ▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒    
-     ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒      
-                                                  
-                                                  
-```
+
 
 </div>
 
 # AppStore
 
-A powerful HTTP and WebSocket server running inside an Isolated Web App (IWA) using the Direct Sockets API.
+A browser embedable http server running inside an Isolated Web App (IWA) using the Direct Sockets API. TLS, QUIC, and WS are supported.
 
 ## Chrome Installation & Quickstart
 
@@ -370,3 +342,6 @@ This project is licensed under the Apache License 2.0 - see the original license
 2. Use Chrome DevTools Network tab to inspect requests
 3. Enable verbose logging in the server code
 4. Test with the provided example clients first
+
+<img width="3691" height="284" alt="Untitled 8@2x" src="https://github.com/user-attachments/assets/88d6cb05-ca95-4247-aea9-68022b91adda" />
+
