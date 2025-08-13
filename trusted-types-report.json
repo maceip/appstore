@@ -1,0 +1,160 @@
+{
+  "title": "Trusted Types Security Report",
+  "generated": "2025-08-13T13:38:40.339Z",
+  "summary": {
+    "totalFiles": 26,
+    "filesWithTrustedTypes": 1,
+    "policiesFound": 2,
+    "potentialIssues": 12,
+    "securityScore": 61
+  },
+  "details": {
+    "policies": [
+      {
+        "name": "iwa-sanitizer",
+        "file": "src/main.ts",
+        "line": 30,
+        "methods": [
+          {
+            "type": "createHTML",
+            "implementation": "(string) => DOMPurify.sanitize(string)"
+          }
+        ],
+        "securityLevel": 100
+      },
+      {
+        "name": "iwa-url-policy",
+        "file": "src/main.ts",
+        "line": 36,
+        "methods": [
+          {
+            "type": "createScriptURL",
+            "implementation": "(url) => url"
+          }
+        ],
+        "securityLevel": 80
+      }
+    ],
+    "violations": [
+      {
+        "file": "src/kotlin-js-rag-functions.js",
+        "line": 392,
+        "type": "eval usage",
+        "severity": "critical",
+        "code": "eval(",
+        "context": "    391:             \n>>> 392:             const result = eval(sanitizedExpression);\n    393:             "
+      },
+      {
+        "file": "src/main.ts",
+        "line": 69,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = `\n        <option value=\"basic\">Basic HTTP Server (Port 44818)</option>\n        <option value=\"enhanced\">Enhanced HTTP Server (Port 44818)</option>\n        <option value=\"tls\">TLS/HTTPS Server (Port 44819)</option>\n    `",
+        "context": "    68:     modeSelect.style.cssText = \"padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc;\";\n>>> 69:     modeSelect.innerHTML = `\n    70:         <option value=\"basic\">Basic HTTP Server (Port 44818)</option>"
+      },
+      {
+        "file": "src/main.ts",
+        "line": 150,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = sanitizerPolicy.createHTML(`\n            <strong>Server Details:</strong><br>\n            • Mode: ${mode.toUpperCase()}<br>\n            • Host: 0.0.0.0<br>\n            • Port: ${port}<br>\n            • Access: <code>${protocol}://localhost:${port}</code><br>\n            • Features: ${features[mode].join(', ')}\n        `)",
+        "context": "    149: \n>>> 150:         info.innerHTML = sanitizerPolicy.createHTML(`\n    151:             <strong>Server Details:</strong><br>"
+      },
+      {
+        "file": "src/main.ts",
+        "line": 243,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = sanitizerPolicy.createHTML(\"\")",
+        "context": "    242: function loadOnlineContent() {\n>>> 243:     parent_container.innerHTML = sanitizerPolicy.createHTML(\"\");\n    244: "
+      },
+      {
+        "file": "src/main.ts",
+        "line": 291,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = sanitizerPolicy.createHTML(\"\")",
+        "context": "    290: function showOfflineMessage() {\n>>> 291:     parent_container.innerHTML = sanitizerPolicy.createHTML(\"\");\n    292:     const p_offline = document.createElement(\"p\");"
+      },
+      {
+        "file": "src/phase5-ai-ml-integration.ts",
+        "line": 323,
+        "type": "eval usage",
+        "severity": "critical",
+        "code": "eval(",
+        "context": "    322:                 // Simple expression evaluation (in real implementation, use safe evaluator)\n>>> 323:                 const result = eval(args.expression.replace(/[^0-9+\\-*/().\\s]/g, ''));\n    324:                 return {"
+      },
+      {
+        "file": "src/server.ts",
+        "line": 244,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = '<div class=\"info\">Output cleared</div>'",
+        "context": "    243:           function clearOutput() {\n>>> 244:             document.getElementById('output').innerHTML = '<div class=\"info\">Output cleared</div>';\n    245:           }"
+      },
+      {
+        "file": "src/server.ts",
+        "line": 418,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = '✅ AI/ML System Ready'",
+        "context": "    417:                 statusEl.className += ' ai-ready';\n>>> 418:                 statusEl.innerHTML = '✅ AI/ML System Ready';\n    419:                 break;"
+      },
+      {
+        "file": "src/server.ts",
+        "line": 422,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = '❌ AI/ML System Error'",
+        "context": "    421:                 statusEl.className += ' ai-error';\n>>> 422:                 statusEl.innerHTML = '❌ AI/ML System Error';\n    423:                 break;"
+      },
+      {
+        "file": "src/server.ts",
+        "line": 426,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = '🔄 AI/ML System Initializing...'",
+        "context": "    425:                 statusEl.className += ' ai-initializing';\n>>> 426:                 statusEl.innerHTML = '🔄 AI/ML System Initializing...';\n    427:             }"
+      },
+      {
+        "file": "src/server.ts",
+        "line": 623,
+        "type": "innerHTML without policy",
+        "severity": "high",
+        "code": ".innerHTML = '<h3>IWA Info</h3><p>Bundle ID: ${bundleId}</p><p>Generated: ' + new Date().toISOString() + '</p>'",
+        "context": "    622:           const info = document.createElement('div');\n>>> 623:           info.innerHTML = '<h3>IWA Info</h3><p>Bundle ID: ${bundleId}</p><p>Generated: ' + new Date().toISOString() + '</p>';\n    624:           document.body.appendChild(info);"
+      },
+      {
+        "file": "vite-iwa-template/src/kotlin-js-rag-functions.js",
+        "line": 604,
+        "type": "eval usage",
+        "severity": "critical",
+        "code": "eval(",
+        "context": "    603:         // Simple calculator (in production, use a safe math parser)\n>>> 604:         const result = eval(expression.replace(/[^0-9+\\-*/().\\s]/g, ''));\n    605:         return { expression, result };"
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "critical",
+        "category": "security",
+        "title": "Fix Critical Security Issues",
+        "description": "Critical security violations found (eval, Function constructor).",
+        "action": "Remove or replace dangerous code patterns immediately"
+      },
+      {
+        "priority": "high",
+        "category": "dom-manipulation",
+        "title": "Secure DOM Manipulation",
+        "description": "Direct innerHTML assignments found without Trusted Types.",
+        "action": "Use sanitizerPolicy.createHTML() for all HTML content"
+      },
+      {
+        "priority": "medium",
+        "category": "coverage",
+        "title": "Increase Trusted Types Coverage",
+        "description": "Less than 50% of files use Trusted Types.",
+        "action": "Extend Trusted Types usage to more files handling dynamic content"
+      }
+    ]
+  }
+}

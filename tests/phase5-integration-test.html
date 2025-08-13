@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 5 AI/ML Integration Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .test-card h3 {
+            margin-top: 0;
+            color: #28a745;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-card .icon {
+            font-size: 1.5em;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button.secondary {
+            background: #007bff;
+        }
+        
+        button.secondary:hover {
+            background: #0056b3;
+        }
+        
+        button.danger {
+            background: #dc3545;
+        }
+        
+        button.danger:hover {
+            background: #c82333;
+        }
+        
+        .output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            border: 1px solid #4a5568;
+        }
+        
+        .output:empty::before {
+            content: "Test output will appear here...";
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .timestamp {
+            color: #a0aec0;
+            font-size: 11px;
+        }
+        
+        .success { color: #68d391; }
+        .error { color: #fc8181; }
+        .warning { color: #f6e05e; }
+        .info { color: #63b3ed; }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-connecting { background: #f6e05e; }
+        .status-connected { background: #68d391; }
+        .status-error { background: #fc8181; }
+        .status-disconnected { background: #a0aec0; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin: 5px 0 0 0;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .json-viewer {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #4a5568;
+        }
+        
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Phase 5 AI/ML Integration Test</h1>
+            <p>Comprehensive testing suite for MediaPipe, Kotlin.js RAG, Function Calling, and MCP Protocol</p>
+        </div>
+        
+        <div class="content">
+            <!-- Connection Status -->
+            <div class="test-card full-width">
+                <h3><span class="icon">🔗</span>Server Connection</h3>
+                <div class="button-group">
+                    <button onclick="connectToServer()" id="connectBtn">Connect to Server</button>
+                    <button onclick="checkServerStatus()" class="secondary">Check Status</button>
+                    <button onclick="initializeAI()" id="initAIBtn" disabled>Initialize AI/ML</button>
+                </div>
+                <div>
+                    <span class="status-indicator status-disconnected" id="connectionStatus"></span>
+                    <span id="connectionText">Not connected</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="connectionProgress"></div>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="testsRun">0</div>
+                    <div class="stat-label">Tests Run</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="testsSuccess">0</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="testsFailed">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgResponseTime">0ms</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+            </div>
+            
+            <div class="test-grid">
+                <!-- MediaPipe LLM Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">🧠</span>MediaPipe LLM</h3>
+                    <p>Test MediaPipe-based large language model inference capabilities.</p>
+                    <div class="button-group">
+                        <button onclick="testLLMGeneration()">Simple Generation</button>
+                        <button onclick="testLLMWithOptions()">With Options</button>
+                        <button onclick="testLLMBatch()">Batch Test</button>
+                    </div>
+                    <div class="output" id="llm-output"></div>
+                </div>
+                
+                <!-- Kotlin.js RAG Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">📚</span>Kotlin.js RAG</h3>
+                    <p>Test Retrieval-Augmented Generation using transpiled Kotlin.js modules.</p>
+                    <div class="button-group">
+                        <button onclick="testRAGQuery()">Basic Query</button>
+                        <button onclick="testRAGWithContext()">Context Query</button>
+                        <button onclick="testRAGBatch()">Batch Queries</button>
+                    </div>
+                    <div class="output" id="rag-output"></div>
+                </div>
+                
+                <!-- Function Calling Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">⚙️</span>Function Calling</h3>
+                    <p>Test AI function calling capabilities with various function types.</p>
+                    <div class="button-group">
+                        <button onclick="testWeatherFunction()">Weather API</button>
+                        <button onclick="testCalculatorFunction()">Calculator</button>
+                        <button onclick="testAllFunctions()">All Functions</button>
+                    </div>
+                    <div class="output" id="function-output"></div>
+                </div>
+                
+                <!-- MCP Protocol Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">🔄</span>MCP Protocol</h3>
+                    <p>Test Model Context Protocol with HTTP resumable transport.</p>
+                    <div class="button-group">
+                        <button onclick="testMCPInitialize()">Initialize</button>
+                        <button onclick="testMCPResumable()">Resumable</button>
+                        <button onclick="testMCPWorkflow()">Full Workflow</button>
+                    </div>
+                    <div class="output" id="mcp-output"></div>
+                </div>
+                
+                <!-- Performance Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">⚡</span>Performance</h3>
+                    <p>Benchmark AI/ML operations and measure response times.</p>
+                    <div class="button-group">
+                        <button onclick="runPerformanceTest()">Run Benchmark</button>
+                        <button onclick="stressTest()">Stress Test</button>
+                        <button onclick="clearPerformanceData()" class="danger">Clear Data</button>
+                    </div>
+                    <div class="output" id="performance-output"></div>
+                </div>
+                
+                <!-- Integration Tests -->
+                <div class="test-card">
+                    <h3><span class="icon">🔗</span>Integration</h3>
+                    <p>Test combined AI/ML workflows and feature interactions.</p>
+                    <div class="button-group">
+                        <button onclick="runIntegrationTest()">Full Integration</button>
+                        <button onclick="testRAGWithLLM()">RAG + LLM</button>
+                        <button onclick="testFunctionWithRAG()">Function + RAG</button>
+                    </div>
+                    <div class="output" id="integration-output"></div>
+                </div>
+            </div>
+            
+            <!-- Global Output -->
+            <div class="test-card full-width">
+                <h3><span class="icon">📋</span>Test Results</h3>
+                <div class="button-group">
+                    <button onclick="runAllTests()" class="secondary">Run All Tests</button>
+                    <button onclick="exportResults()" class="secondary">Export Results</button>
+                    <button onclick="clearAllOutputs()" class="danger">Clear All</button>
+                </div>
+                <div class="output" id="global-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let serverConnected = false;
+        let aiInitialized = false;
+        let testStats = {
+            run: 0,
+            success: 0,
+            failed: 0,
+            responseTimes: []
+        };
+        let serverUrl = 'http://localhost:44818';
+        
+        // Utility functions
+        function log(message, type = 'info', outputId = 'global-output') {
+            const output = document.getElementById(outputId);
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `
+                <span class="timestamp">[${timestamp}]</span> ${message}
+            `;
+            output.appendChild(entry);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function updateStats() {
+            document.getElementById('testsRun').textContent = testStats.run;
+            document.getElementById('testsSuccess').textContent = testStats.success;
+            document.getElementById('testsFailed').textContent = testStats.failed;
+            
+            const avgTime = testStats.responseTimes.length > 0 
+                ? Math.round(testStats.responseTimes.reduce((a, b) => a + b, 0) / testStats.responseTimes.length)
+                : 0;
+            document.getElementById('avgResponseTime').textContent = avgTime + 'ms';
+        }
+        
+        function updateConnectionStatus(status, text) {
+            const indicator = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('connectionText');
+            const progress = document.getElementById('connectionProgress');
+            
+            indicator.className = `status-indicator status-${status}`;
+            textEl.textContent = text;
+            
+            switch (status) {
+                case 'connecting':
+                    progress.style.width = '30%';
+                    break;
+                case 'connected':
+                    progress.style.width = '100%';
+                    break;
+                case 'error':
+                    progress.style.width = '0%';
+                    break;
+                default:
+                    progress.style.width = '0%';
+            }
+        }
+        
+        async function makeRequest(endpoint, options = {}) {
+            const startTime = Date.now();
+            testStats.run++;
+            
+            try {
+                const response = await fetch(serverUrl + endpoint, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const responseTime = Date.now() - startTime;
+                testStats.responseTimes.push(responseTime);
+                
+                if (response.ok) {
+                    testStats.success++;
+                    const data = await response.json();
+                    updateStats();
+                    return { success: true, data, responseTime };
+                } else {
+                    testStats.failed++;
+                    updateStats();
+                    return { success: false, error: `HTTP ${response.status}`, responseTime };
+                }
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                testStats.responseTimes.push(responseTime);
+                testStats.failed++;
+                updateStats();
+                return { success: false, error: error.message, responseTime };
+            }
+        }
+        
+        // Connection functions
+        async function connectToServer() {
+            updateConnectionStatus('connecting', 'Connecting...');
+            log('Attempting to connect to server...', 'info');
+            
+            const result = await makeRequest('/api/status');
+            
+            if (result.success) {
+                serverConnected = true;
+                updateConnectionStatus('connected', `Connected to ${result.data.server}`);
+                log(`✅ Connected to ${result.data.server} (${result.responseTime}ms)`, 'success');
+                document.getElementById('initAIBtn').disabled = false;
+            } else {
+                serverConnected = false;
+                updateConnectionStatus('error', 'Connection failed');
+                log(`❌ Connection failed: ${result.error}`, 'error');
+            }
+        }
+        
+        async function checkServerStatus() {
+            if (!serverConnected) {
+                log('⚠️ Not connected to server', 'warning');
+                return;
+            }
+            
+            const result = await makeRequest('/api/status');
+            if (result.success) {
+                log(`📊 Server Status: ${JSON.stringify(result.data, null, 2)}`, 'info');
+            } else {
+                log(`❌ Status check failed: ${result.error}`, 'error');
+            }
+        }
+        
+        async function initializeAI() {
+            if (!serverConnected) {
+                log('⚠️ Connect to server first', 'warning');
+                return;
+            }
+            
+            log('🤖 Initializing AI/ML system...', 'info');
+            document.getElementById('initAIBtn').disabled = true;
+            
+            const result = await makeRequest('/api/ai/initialize');
+            
+            if (result.success) {
+                aiInitialized = true;
+                log(`✅ AI/ML system initialized (${result.responseTime}ms)`, 'success');
+                log(`Features: ${Object.keys(result.data.features).join(', ')}`, 'info');
+            } else {
+                log(`❌ AI initialization failed: ${result.error}`, 'error');
+            }
+            
+            document.getElementById('initAIBtn').disabled = false;
+        }
+        
+        // MediaPipe LLM Tests
+        async function testLLMGeneration() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'llm-output');
+                return;
+            }
+            
+            log('🧠 Testing LLM generation...', 'info', 'llm-output');
+            
+            const result = await makeRequest('/api/ai/generate', {
+                method: 'POST',
+                body: JSON.stringify({
+                    prompt: 'Explain the benefits of Isolated Web Apps in 2-3 sentences.',
+                    options: { maxTokens: 150, temperature: 0.7 }
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ LLM Response (${result.responseTime}ms):`, 'success', 'llm-output');
+                log(result.data.response, 'info', 'llm-output');
+            } else {
+                log(`❌ LLM generation failed: ${result.error}`, 'error', 'llm-output');
+            }
+        }
+        
+        async function testLLMWithOptions() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'llm-output');
+                return;
+            }
+            
+            log('🧠 Testing LLM with custom options...', 'info', 'llm-output');
+            
+            const result = await makeRequest('/api/ai/generate', {
+                method: 'POST',
+                body: JSON.stringify({
+                    prompt: 'Write a haiku about artificial intelligence.',
+                    options: { maxTokens: 50, temperature: 0.9 }
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ Creative LLM Response (${result.responseTime}ms):`, 'success', 'llm-output');
+                log(result.data.response, 'info', 'llm-output');
+            } else {
+                log(`❌ LLM with options failed: ${result.error}`, 'error', 'llm-output');
+            }
+        }
+        
+        async function testLLMBatch() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'llm-output');
+                return;
+            }
+            
+            log('🧠 Running batch LLM test...', 'info', 'llm-output');
+            
+            const prompts = [
+                'What is machine learning?',
+                'Explain neural networks briefly.',
+                'What are the benefits of edge AI?'
+            ];
+            
+            for (let i = 0; i < prompts.length; i++) {
+                const result = await makeRequest('/api/ai/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        prompt: prompts[i],
+                        options: { maxTokens: 100 }
+                    })
+                });
+                
+                if (result.success) {
+                    log(`✅ Batch ${i+1}/3 (${result.responseTime}ms): ${result.data.response.substring(0, 100)}...`, 'success', 'llm-output');
+                } else {
+                    log(`❌ Batch ${i+1}/3 failed: ${result.error}`, 'error', 'llm-output');
+                }
+            }
+        }
+        
+        // RAG Tests
+        async function testRAGQuery() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'rag-output');
+                return;
+            }
+            
+            log('📚 Testing RAG query...', 'info', 'rag-output');
+            
+            const result = await makeRequest('/api/ai/rag', {
+                method: 'POST',
+                body: JSON.stringify({
+                    query: 'How do I implement HTTP servers using Direct Sockets?',
+                    context: {}
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ RAG Query (${result.responseTime}ms): Found ${result.data.results.length} results`, 'success', 'rag-output');
+                result.data.results.forEach((doc, i) => {
+                    log(`📄 ${i+1}. ${doc.title} (score: ${doc.score.toFixed(2)})`, 'info', 'rag-output');
+                });
+            } else {
+                log(`❌ RAG query failed: ${result.error}`, 'error', 'rag-output');
+            }
+        }
+        
+        async function testRAGWithContext() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'rag-output');
+                return;
+            }
+            
+            log('📚 Testing RAG with context...', 'info', 'rag-output');
+            
+            const result = await makeRequest('/api/ai/rag', {
+                method: 'POST',
+                body: JSON.stringify({
+                    query: 'AI and machine learning integration',
+                    context: { 
+                        preferredCategories: ['ai-ml', 'ai-protocols'],
+                        maxResults: 3
+                    }
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ Contextual RAG (${result.responseTime}ms): ${result.data.results.length} targeted results`, 'success', 'rag-output');
+                result.data.results.forEach((doc, i) => {
+                    log(`🎯 ${i+1}. ${doc.title} [${doc.metadata.category}] (${doc.score.toFixed(2)})`, 'info', 'rag-output');
+                });
+            } else {
+                log(`❌ Contextual RAG failed: ${result.error}`, 'error', 'rag-output');
+            }
+        }
+        
+        async function testRAGBatch() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'rag-output');
+                return;
+            }
+            
+            log('📚 Running batch RAG queries...', 'info', 'rag-output');
+            
+            const queries = [
+                'web development security',
+                'networking protocols',
+                'server implementation'
+            ];
+            
+            for (let i = 0; i < queries.length; i++) {
+                const result = await makeRequest('/api/ai/rag', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        query: queries[i],
+                        context: { maxResults: 2 }
+                    })
+                });
+                
+                if (result.success) {
+                    log(`✅ Batch RAG ${i+1}/3 (${result.responseTime}ms): "${queries[i]}" → ${result.data.results.length} results`, 'success', 'rag-output');
+                } else {
+                    log(`❌ Batch RAG ${i+1}/3 failed: ${result.error}`, 'error', 'rag-output');
+                }
+            }
+        }
+        
+        // Function Calling Tests
+        async function testWeatherFunction() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'function-output');
+                return;
+            }
+            
+            log('⚙️ Testing weather function...', 'info', 'function-output');
+            
+            const result = await makeRequest('/api/ai/function', {
+                method: 'POST',
+                body: JSON.stringify({
+                    function: 'get_weather',
+                    arguments: { location: 'Tokyo' }
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ Weather Function (${result.responseTime}ms): ${result.data.result}`, 'success', 'function-output');
+                if (result.data.data) {
+                    log(`🌡️ Details: ${JSON.stringify(result.data.data)}`, 'info', 'function-output');
+                }
+            } else {
+                log(`❌ Weather function failed: ${result.error}`, 'error', 'function-output');
+            }
+        }
+        
+        async function testCalculatorFunction() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'function-output');
+                return;
+            }
+            
+            log('⚙️ Testing calculator function...', 'info', 'function-output');
+            
+            const result = await makeRequest('/api/ai/function', {
+                method: 'POST',
+                body: JSON.stringify({
+                    function: 'calculate',
+                    arguments: { expression: '(15 + 25) * 2 - 10' }
+                })
+            });
+            
+            if (result.success) {
+                log(`✅ Calculator Function (${result.responseTime}ms): ${result.data.result}`, 'success', 'function-output');
+            } else {
+                log(`❌ Calculator function failed: ${result.error}`, 'error', 'function-output');
+            }
+        }
+        
+        async function testAllFunctions() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'function-output');
+                return;
+            }
+            
+            log('⚙️ Testing all available functions...', 'info', 'function-output');
+            
+            const functions = [
+                { name: 'get_weather', args: { location: 'London' } },
+                { name: 'calculate', args: { expression: '100 / 4 + 25' } },
+                { name: 'get_weather', args: { location: 'New York' } }
+            ];
+            
+            for (let i = 0; i < functions.length; i++) {
+                const func = functions[i];
+                const result = await makeRequest('/api/ai/function', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        function: func.name,
+                        arguments: func.args
+                    })
+                });
+                
+                if (result.success) {
+                    log(`✅ ${func.name} (${result.responseTime}ms): ${result.data.result}`, 'success', 'function-output');
+                } else {
+                    log(`❌ ${func.name} failed: ${result.error}`, 'error', 'function-output');
+                }
+            }
+        }
+        
+        // MCP Protocol Tests
+        async function testMCPInitialize() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'mcp-output');
+                return;
+            }
+            
+            log('🔄 Testing MCP initialization...', 'info', 'mcp-output');
+            
+            const result = await makeRequest('/api/ai/mcp', {
+                method: 'POST',
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'initialize',
+                    params: {
+                        clientInfo: { name: 'Phase5 Test Client', version: '1.0.0' },
+                        capabilities: { llm: true, rag: true, functions: true }
+                    }
+                })
+            });
+            
+            if (result.success && result.data.result) {
+                log(`✅ MCP Initialize (${result.responseTime}ms): Protocol ${result.data.result.protocolVersion}`, 'success', 'mcp-output');
+                log(`🔧 Server: ${result.data.result.serverInfo.name} v${result.data.result.serverInfo.version}`, 'info', 'mcp-output');
+                log(`⚡ Capabilities: ${JSON.stringify(result.data.result.capabilities)}`, 'info', 'mcp-output');
+            } else {
+                log(`❌ MCP initialize failed: ${result.error || JSON.stringify(result.data.error)}`, 'error', 'mcp-output');
+            }
+        }
+        
+        async function testMCPResumable() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'mcp-output');
+                return;
+            }
+            
+            log('🔄 Testing MCP resumable transport...', 'info', 'mcp-output');
+            
+            // First, make a request that we can resume
+            const sessionId = 'test-session-' + Date.now();
+            const result1 = await makeRequest('/api/ai/mcp', {
+                method: 'POST',
+                headers: {
+                    'x-mcp-session-id': sessionId
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 'resumable-test-1',
+                    method: 'session/status',
+                    params: {}
+                })
+            });
+            
+            if (result1.success) {
+                log(`✅ Initial request (${result1.responseTime}ms): Session created`, 'success', 'mcp-output');
+                
+                // Now try to resume the message
+                const result2 = await makeRequest('/api/ai/mcp?messageId=resumable-test-1', {
+                    method: 'GET',
+                    headers: {
+                        'x-mcp-session-id': sessionId,
+                        'x-mcp-message-id': 'resumable-test-1'
+                    }
+                });
+                
+                if (result2.success) {
+                    log(`✅ Resumable request (${result2.responseTime}ms): Message retrieved`, 'success', 'mcp-output');
+                    log(`📋 Resumed data: ${JSON.stringify(result2.data.result)}`, 'info', 'mcp-output');
+                } else {
+                    log(`❌ Resume failed: ${result2.error}`, 'error', 'mcp-output');
+                }
+            } else {
+                log(`❌ Initial MCP request failed: ${result1.error}`, 'error', 'mcp-output');
+            }
+        }
+        
+        async function testMCPWorkflow() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'mcp-output');
+                return;
+            }
+            
+            log('🔄 Testing full MCP workflow...', 'info', 'mcp-output');
+            
+            const sessionId = 'workflow-session-' + Date.now();
+            
+            // 1. Initialize
+            const init = await makeRequest('/api/ai/mcp', {
+                method: 'POST',
+                headers: { 'x-mcp-session-id': sessionId },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 1,
+                    method: 'initialize',
+                    params: { clientInfo: { name: 'Workflow Test' } }
+                })
+            });
+            
+            if (!init.success) {
+                log(`❌ Workflow init failed: ${init.error}`, 'error', 'mcp-output');
+                return;
+            }
+            
+            log(`✅ Step 1: Initialize (${init.responseTime}ms)`, 'success', 'mcp-output');
+            
+            // 2. LLM Generate
+            const llm = await makeRequest('/api/ai/mcp', {
+                method: 'POST',
+                headers: { 'x-mcp-session-id': sessionId },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 2,
+                    method: 'llm/generate',
+                    params: { prompt: 'What is the future of AI?' }
+                })
+            });
+            
+            if (llm.success) {
+                log(`✅ Step 2: LLM Generate (${llm.responseTime}ms)`, 'success', 'mcp-output');
+            } else {
+                log(`❌ Step 2 failed: ${llm.error}`, 'error', 'mcp-output');
+            }
+            
+            // 3. Function Call
+            const func = await makeRequest('/api/ai/mcp', {
+                method: 'POST',
+                headers: { 'x-mcp-session-id': sessionId },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: 3,
+                    method: 'function/call',
+                    params: { function: 'calculate', arguments: { expression: '42 * 2' } }
+                })
+            });
+            
+            if (func.success) {
+                log(`✅ Step 3: Function Call (${func.responseTime}ms)`, 'success', 'mcp-output');
+                log(`🎯 Complete workflow executed successfully!`, 'success', 'mcp-output');
+            } else {
+                log(`❌ Step 3 failed: ${func.error}`, 'error', 'mcp-output');
+            }
+        }
+        
+        // Performance Tests
+        async function runPerformanceTest() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'performance-output');
+                return;
+            }
+            
+            log('⚡ Running performance benchmark...', 'info', 'performance-output');
+            
+            const tests = [
+                { name: 'LLM Generation', endpoint: '/api/ai/generate', body: { prompt: 'Hello AI' } },
+                { name: 'RAG Query', endpoint: '/api/ai/rag', body: { query: 'test query' } },
+                { name: 'Function Call', endpoint: '/api/ai/function', body: { function: 'calculate', arguments: { expression: '1+1' } } }
+            ];
+            
+            for (const test of tests) {
+                const times = [];
+                const iterations = 5;
+                
+                for (let i = 0; i < iterations; i++) {
+                    const result = await makeRequest(test.endpoint, {
+                        method: 'POST',
+                        body: JSON.stringify(test.body)
+                    });
+                    
+                    if (result.success) {
+                        times.push(result.responseTime);
+                    }
+                }
+                
+                if (times.length > 0) {
+                    const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+                    const min = Math.min(...times);
+                    const max = Math.max(...times);
+                    
+                    log(`📊 ${test.name}: avg=${avg}ms, min=${min}ms, max=${max}ms`, 'success', 'performance-output');
+                } else {
+                    log(`❌ ${test.name}: All requests failed`, 'error', 'performance-output');
+                }
+            }
+        }
+        
+        async function stressTest() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'performance-output');
+                return;
+            }
+            
+            log('⚡ Running stress test (20 concurrent requests)...', 'info', 'performance-output');
+            
+            const promises = [];
+            const startTime = Date.now();
+            
+            for (let i = 0; i < 20; i++) {
+                promises.push(
+                    makeRequest('/api/ai/generate', {
+                        method: 'POST',
+                        body: JSON.stringify({ prompt: `Stress test request ${i+1}` })
+                    })
+                );
+            }
+            
+            const results = await Promise.all(promises);
+            const totalTime = Date.now() - startTime;
+            const successful = results.filter(r => r.success).length;
+            
+            log(`📊 Stress test completed in ${totalTime}ms`, 'success', 'performance-output');
+            log(`✅ Successful: ${successful}/20 requests`, successful === 20 ? 'success' : 'warning', 'performance-output');
+            log(`⚡ Throughput: ${Math.round(20000 / totalTime)} requests/second`, 'info', 'performance-output');
+        }
+        
+        function clearPerformanceData() {
+            testStats = { run: 0, success: 0, failed: 0, responseTimes: [] };
+            updateStats();
+            log('📊 Performance data cleared', 'info', 'performance-output');
+        }
+        
+        // Integration Tests
+        async function runIntegrationTest() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'integration-output');
+                return;
+            }
+            
+            log('🔗 Running full integration test...', 'info', 'integration-output');
+            
+            // Test all major components in sequence
+            const tests = [
+                () => testLLMGeneration(),
+                () => testRAGQuery(),
+                () => testWeatherFunction(),
+                () => testMCPInitialize()
+            ];
+            
+            let passed = 0;
+            for (let i = 0; i < tests.length; i++) {
+                try {
+                    await tests[i]();
+                    passed++;
+                    log(`✅ Integration step ${i+1}/4 completed`, 'success', 'integration-output');
+                } catch (error) {
+                    log(`❌ Integration step ${i+1}/4 failed: ${error.message}`, 'error', 'integration-output');
+                }
+            }
+            
+            log(`🎯 Integration test: ${passed}/4 components working`, passed === 4 ? 'success' : 'warning', 'integration-output');
+        }
+        
+        async function testRAGWithLLM() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'integration-output');
+                return;
+            }
+            
+            log('🔗 Testing RAG + LLM integration...', 'info', 'integration-output');
+            
+            // First, get RAG results
+            const ragResult = await makeRequest('/api/ai/rag', {
+                method: 'POST',
+                body: JSON.stringify({
+                    query: 'HTTP server implementation',
+                    context: { maxResults: 2 }
+                })
+            });
+            
+            if (ragResult.success && ragResult.data.results.length > 0) {
+                log(`📚 RAG found ${ragResult.data.results.length} documents`, 'success', 'integration-output');
+                
+                // Use RAG results to enhance LLM prompt
+                const context = ragResult.data.results.map(r => r.content).join('\n\n');
+                const enhancedPrompt = `Based on this context:\n${context}\n\nQuestion: How do I implement an HTTP server?`;
+                
+                const llmResult = await makeRequest('/api/ai/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        prompt: enhancedPrompt,
+                        options: { maxTokens: 200 }
+                    })
+                });
+                
+                if (llmResult.success) {
+                    log(`🧠 LLM enhanced response: ${llmResult.data.response.substring(0, 150)}...`, 'success', 'integration-output');
+                    log(`🎯 RAG + LLM integration successful!`, 'success', 'integration-output');
+                } else {
+                    log(`❌ LLM enhancement failed: ${llmResult.error}`, 'error', 'integration-output');
+                }
+            } else {
+                log(`❌ RAG query failed: ${ragResult.error}`, 'error', 'integration-output');
+            }
+        }
+        
+        async function testFunctionWithRAG() {
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning', 'integration-output');
+                return;
+            }
+            
+            log('🔗 Testing Function + RAG integration...', 'info', 'integration-output');
+            
+            // Use function to get weather, then RAG to find related info
+            const funcResult = await makeRequest('/api/ai/function', {
+                method: 'POST',
+                body: JSON.stringify({
+                    function: 'get_weather',
+                    arguments: { location: 'London' }
+                })
+            });
+            
+            if (funcResult.success) {
+                log(`⚙️ Weather function: ${funcResult.data.result}`, 'success', 'integration-output');
+                
+                // Now search for weather-related documentation
+                const ragResult = await makeRequest('/api/ai/rag', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        query: 'weather API integration',
+                        context: { maxResults: 1 }
+                    })
+                });
+                
+                if (ragResult.success) {
+                    log(`📚 Found ${ragResult.data.results.length} related documents`, 'success', 'integration-output');
+                    log(`🎯 Function + RAG integration successful!`, 'success', 'integration-output');
+                } else {
+                    log(`❌ RAG search failed: ${ragResult.error}`, 'error', 'integration-output');
+                }
+            } else {
+                log(`❌ Function call failed: ${funcResult.error}`, 'error', 'integration-output');
+            }
+        }
+        
+        // Utility functions
+        async function runAllTests() {
+            if (!serverConnected) {
+                log('⚠️ Connect to server first', 'warning');
+                return;
+            }
+            
+            if (!aiInitialized) {
+                log('⚠️ Initialize AI/ML system first', 'warning');
+                return;
+            }
+            
+            log('🚀 Running all tests...', 'info');
+            
+            const allTests = [
+                testLLMGeneration,
+                testRAGQuery,
+                testWeatherFunction,
+                testMCPInitialize,
+                runPerformanceTest,
+                runIntegrationTest
+            ];
+            
+            for (let i = 0; i < allTests.length; i++) {
+                try {
+                    await allTests[i]();
+                    log(`✅ Test suite ${i+1}/${allTests.length} completed`, 'success');
+                } catch (error) {
+                    log(`❌ Test suite ${i+1}/${allTests.length} failed: ${error.message}`, 'error');
+                }
+                
+                // Small delay between test suites
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            log('🎯 All tests completed!', 'success');
+        }
+        
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                stats: testStats,
+                serverConnected,
+                aiInitialized,
+                outputs: {
+                    global: document.getElementById('global-output').innerText,
+                    llm: document.getElementById('llm-output').innerText,
+                    rag: document.getElementById('rag-output').innerText,
+                    function: document.getElementById('function-output').innerText,
+                    mcp: document.getElementById('mcp-output').innerText,
+                    performance: document.getElementById('performance-output').innerText,
+                    integration: document.getElementById('integration-output').innerText
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `phase5-test-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('📁 Test results exported', 'success');
+        }
+        
+        function clearAllOutputs() {
+            const outputs = ['global-output', 'llm-output', 'rag-output', 'function-output', 'mcp-output', 'performance-output', 'integration-output'];
+            outputs.forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            log('🧹 All outputs cleared', 'info');
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            log('🤖 Phase 5 AI/ML Integration Test Suite loaded', 'success');
+            log('Click "Connect to Server" to begin testing', 'info');
+            updateStats();
+        });
+    </script>
+</body>
+</html>

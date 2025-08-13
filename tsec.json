@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "lib",
+    "temp-safety-web",
+    "safety-web-eslint-plugin",
+    "vite-iwa-template"
+  ],
+  "tsec": {
+    "exemptionList": [
+      {
+        "rule": "ban-trustedtypes-createpolicy",
+        "justification": "Trusted Types policies are required for secure DOM manipulation in this IWA application"
+      },
+      {
+        "rule": "ban-dom-innerHTML-assignments",
+        "justification": "innerHTML assignments are secured using Trusted Types sanitizer policies"
+      }
+    ],
+    "conformanceConfig": {
+      "rules": [
+        {
+          "name": "ban-eval",
+          "description": "Prohibit use of eval() function",
+          "severity": "error"
+        },
+        {
+          "name": "ban-function-constructor",
+          "description": "Prohibit use of Function constructor",
+          "severity": "error"
+        },
+        {
+          "name": "ban-dom-innerHTML-assignments",
+          "description": "Prohibit direct innerHTML assignments without Trusted Types",
+          "severity": "warning"
+        },
+        {
+          "name": "ban-trustedtypes-createpolicy",
+          "description": "Require review of Trusted Types policy creation",
+          "severity": "warning"
+        }
+      ]
+    }
+  }
+}

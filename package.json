@@ -1,6 +1,5 @@
 {
-    "name": "appstore",
-    "short_name": "AppStore",
+    "name": "iwa-project-templates",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -8,20 +7,24 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "prettier": "prettier -w ."
-    },
-    "devDependencies": {
-        "@types/trusted-types": "^2.0.7",
-        "dompurify": "^3.2.6",
-        "dotenv": "^17.2.0",
-        "prettier": "^3.6.2",
-        "rollup-plugin-webbundle": "^0.2.0",
-        "typescript": "~5.8.3",
-        "vite": "^7.0.4",
-        "vite-plugin-html-inject": "^1.1.2",
-        "wbn-sign": "^0.2.1"
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "lint:security": "eslint . --config .eslintrc.safety.js --ext ts,tsx,js,jsx",
+        "security:tsec": "tsec --project tsec.json",
+        "security:trusted-types": "node scripts/trusted-types-report.cjs",
+        "security:full": "npm run security:tsec && npm run security:trusted-types && npm run lint:security",
+        "security:report": "npm run security:full && echo '\n📊 Security reports generated:\n- trusted-types-report.html\n- trusted-types-report.json\n- ESLint security report in console'"
     },
     "dependencies": {
-        "@matrixai/quic": "^2.0.9"
+        "dompurify": "^3.0.8"
+    },
+    "devDependencies": {
+        "@types/dompurify": "^3.0.5",
+        "@types/node": "^20.11.17",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "eslint": "^8.56.0",
+        "tsec": "^0.2.7",
+        "typescript": "^5.2.2",
+        "vite": "^5.1.0"
     }
 }

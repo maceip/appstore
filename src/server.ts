@@ -8,11 +8,13 @@ import { HttpServer as EnhancedHttpServer } from './http-server-enhanced.js';
 import { TLSServer, TLSCertificateManager } from './tls-server.js';
 import { WebSocketConnection } from './websocket-server.js';
 import { IWABuilder, IWAKeyPair, IWAInstaller } from './iwa-builder.js';
+import { Phase5AIMLServer } from './phase5-ai-ml-integration.js';
 
 export class DemoServer {
   private httpServer?: HttpServer;
   private enhancedHttpServer?: EnhancedHttpServer;
   private tlsServer?: TLSServer;
+  private aimlServer?: Phase5AIMLServer;
   private isRunning = false;
   private serverMode: 'basic' | 'enhanced' | 'tls' = 'basic';
 
@@ -26,6 +28,8 @@ export class DemoServer {
         onRequest: this.handleHttpRequest.bind(this) as any,
         onWebSocket: this.handleWebSocket.bind(this),
       });
+      // Initialize AI/ML server with enhanced HTTP server
+      this.aimlServer = new Phase5AIMLServer(this.enhancedHttpServer);
     } else {
       this.httpServer = new HttpServer({
         host: '0.0.0.0',
@@ -33,11 +37,21 @@ export class DemoServer {
         onRequest: this.handleHttpRequest.bind(this),
         onWebSocket: this.handleWebSocket.bind(this),
       });
+      // Initialize AI/ML server with basic HTTP server
+      this.aimlServer = new Phase5AIMLServer(this.httpServer!);
     }
   }
 
   private async handleHttpRequest(request: HttpRequest, response: HttpResponse): Promise<void> {
     console.log(`HTTP ${request.method} ${request.uri}`);
+
+    // Handle AI/ML endpoints first
+    if (request.url.pathname.startsWith('/api/ai/')) {
+      if (this.aimlServer) {
+        await this.aimlServer.handleAIRequest(request, response);
+        return;
+      }
+    }
 
     // Simple routing
     if (request.url.pathname === '/') {
@@ -52,6 +66,8 @@ export class DemoServer {
       await this.handleIWAGeneration(response);
     } else if (request.url.pathname === '/api/tls/cert') {
       await this.handleTLSCertGeneration(response);
+    } else if (request.url.pathname === '/api/ai/initialize') {
+      await this.handleAIInitialization(response);
     } else {
       await this.handle404(request, response);
     }
@@ -69,29 +85,37 @@ export class DemoServer {
         <title>IWA ${serverType} Server Demo</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
-          .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center; }
           .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
           .feature-card { background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007acc; }
+          .ai-card { border-left-color: #28a745; }
           .endpoint { background: #e9ecef; padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
           .method { font-weight: bold; color: #007acc; display: inline-block; width: 60px; }
           .secure { color: #28a745; }
           .enhanced { color: #fd7e14; }
+          .ai-feature { color: #28a745; }
           button { background: #007acc; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; }
           button:hover { background: #0056b3; }
           button:disabled { background: #6c757d; cursor: not-allowed; }
+          button.ai-button { background: #28a745; }
+          button.ai-button:hover { background: #218838; }
           .output { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 15px 0; border-radius: 5px; font-family: monospace; max-height: 300px; overflow-y: auto; }
           .success { color: #28a745; }
           .error { color: #dc3545; }
           .warning { color: #ffc107; }
           .info { color: #17a2b8; }
+          .ai-status { padding: 10px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+          .ai-initializing { background: #fff3cd; color: #856404; }
+          .ai-ready { background: #d4edda; color: #155724; }
+          .ai-error { background: #f8d7da; color: #721c24; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
             <h1>🚀 IWA ${serverType} Server Demo</h1>
-            <p>Advanced HTTP/WebSocket server with Direct Sockets API</p>
+            <p>Advanced HTTP/WebSocket server with Direct Sockets API + AI/ML Integration</p>
             <p><strong>Mode:</strong> ${this.serverMode.toUpperCase()} | <strong>Port:</strong> ${port}</p>
           </div>
 
@@ -106,6 +130,22 @@ export class DemoServer {
                 <li>Request parsing & validation</li>
                 <li>IWA Bundle Generation</li>
               </ul>
+            </div>
+
+            <div class="feature-card ai-card">
+              <h3>🤖 AI/ML Features (Phase 5)</h3>
+              <div id="ai-status" class="ai-status ai-initializing">
+                🔄 AI/ML System Initializing...
+              </div>
+              <ul>
+                <li><span class="ai-feature">MediaPipe</span> LLM Inference</li>
+                <li><span class="ai-feature">Kotlin.js</span> RAG Integration</li>
+                <li><span class="ai-feature">Function Calling</span> Support</li>
+                <li><span class="ai-feature">MCP Protocol</span> Server</li>
+                <li>HTTP Resumable Transport</li>
+              </ul>
+              <button onclick="initializeAI()" class="ai-button" id="initAIBtn">Initialize AI/ML</button>
+              <button onclick="checkAIStatus()" class="ai-button">Check AI Status</button>
             </div>
 
             <div class="feature-card">
@@ -127,6 +167,25 @@ export class DemoServer {
               </div>
               ${this.serverMode === 'tls' ? '<div class="endpoint"><span class="method">GET</span> <code>/api/tls/cert</code> - TLS certificate info</div>' : ''}
             </div>
+
+            <div class="feature-card ai-card">
+              <h3>🧠 AI/ML APIs</h3>
+              <div class="endpoint">
+                <span class="method">GET</span> <code>/api/ai/status</code> - AI system status
+              </div>
+              <div class="endpoint">
+                <span class="method">POST</span> <code>/api/ai/generate</code> - LLM text generation
+              </div>
+              <div class="endpoint">
+                <span class="method">POST</span> <code>/api/ai/rag</code> - RAG document queries
+              </div>
+              <div class="endpoint">
+                <span class="method">POST</span> <code>/api/ai/function</code> - Function calling
+              </div>
+              <div class="endpoint">
+                <span class="method">POST</span> <code>/api/ai/mcp</code> - MCP protocol endpoint
+              </div>
+            </div>
           </div>
 
           <div class="feature-card">
@@ -141,6 +200,18 @@ export class DemoServer {
             
             <div id="output" class="output">
               <div class="info">Ready to test! Click the buttons above to interact with the server.</div>
+            </div>
+          </div>
+
+          <div class="feature-card ai-card">
+            <h3>🤖 Test AI/ML Features</h3>
+            <button onclick="testLLMGeneration()" class="ai-button">Test LLM Generation</button>
+            <button onclick="testRAGQuery()" class="ai-button">Test RAG Query</button>
+            <button onclick="testFunctionCall()" class="ai-button">Test Function Call</button>
+            <button onclick="testMCPProtocol()" class="ai-button">Test MCP Protocol</button>
+            
+            <div id="ai-output" class="output">
+              <div class="info">AI/ML features ready for testing</div>
             </div>
           </div>
 
@@ -159,6 +230,7 @@ export class DemoServer {
 
         <script>
           let ws = null;
+          let aiInitialized = false;
           
           function log(message, type = 'info', outputId = 'output') {
             const output = document.getElementById(outputId);
@@ -170,6 +242,189 @@ export class DemoServer {
 
           function clearOutput() {
             document.getElementById('output').innerHTML = '<div class="info">Output cleared</div>';
+          }
+
+          // AI/ML Functions
+          async function initializeAI() {
+            try {
+              log('Initializing AI/ML system...', 'info', 'ai-output');
+              document.getElementById('initAIBtn').disabled = true;
+              
+              const response = await fetch('/api/ai/initialize');
+              const data = await response.json();
+              
+              if (data.success) {
+                log('✅ AI/ML System initialized successfully!', 'success', 'ai-output');
+                log('Available features: ' + Object.keys(data.features).join(', '), 'info', 'ai-output');
+                aiInitialized = true;
+                updateAIStatus('ready');
+              } else {
+                log('❌ AI/ML initialization failed: ' + data.message, 'error', 'ai-output');
+                updateAIStatus('error');
+              }
+            } catch (error) {
+              log('❌ AI/ML initialization error: ' + error.message, 'error', 'ai-output');
+              updateAIStatus('error');
+            } finally {
+              document.getElementById('initAIBtn').disabled = false;
+            }
+          }
+
+          async function checkAIStatus() {
+            try {
+              log('Checking AI/ML status...', 'info', 'ai-output');
+              const response = await fetch('/api/ai/status');
+              const data = await response.json();
+              log('✅ AI/ML Status: ' + JSON.stringify(data, null, 2), 'success', 'ai-output');
+              
+              if (data.initialized) {
+                updateAIStatus('ready');
+                aiInitialized = true;
+              }
+            } catch (error) {
+              log('❌ AI/ML status error: ' + error.message, 'error', 'ai-output');
+            }
+          }
+
+          async function testLLMGeneration() {
+            if (!aiInitialized) {
+              log('⚠️ Please initialize AI/ML system first', 'warning', 'ai-output');
+              return;
+            }
+            
+            try {
+              log('Testing LLM generation...', 'info', 'ai-output');
+              const response = await fetch('/api/ai/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  prompt: 'Explain what Isolated Web Apps are and their benefits.',
+                  options: { maxTokens: 200, temperature: 0.7 }
+                })
+              });
+              const data = await response.json();
+              
+              if (data.success) {
+                log('✅ LLM Response: ' + data.response, 'success', 'ai-output');
+              } else {
+                log('❌ LLM Error: ' + data.error, 'error', 'ai-output');
+              }
+            } catch (error) {
+              log('❌ LLM generation error: ' + error.message, 'error', 'ai-output');
+            }
+          }
+
+          async function testRAGQuery() {
+            if (!aiInitialized) {
+              log('⚠️ Please initialize AI/ML system first', 'warning', 'ai-output');
+              return;
+            }
+            
+            try {
+              log('Testing RAG query...', 'info', 'ai-output');
+              const response = await fetch('/api/ai/rag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  query: 'How do I implement HTTP servers in web applications?',
+                  context: { preferredCategories: ['server-development', 'networking'] }
+                })
+              });
+              const data = await response.json();
+              
+              if (data.success) {
+                log('✅ RAG Results: Found ' + data.results.length + ' relevant documents', 'success', 'ai-output');
+                data.results.forEach((result, i) => {
+                  log('📄 Result ' + (i+1) + ': ' + result.title + ' (score: ' + result.score.toFixed(2) + ')', 'info', 'ai-output');
+                });
+              } else {
+                log('❌ RAG Error: ' + data.error, 'error', 'ai-output');
+              }
+            } catch (error) {
+              log('❌ RAG query error: ' + error.message, 'error', 'ai-output');
+            }
+          }
+
+          async function testFunctionCall() {
+            if (!aiInitialized) {
+              log('⚠️ Please initialize AI/ML system first', 'warning', 'ai-output');
+              return;
+            }
+            
+            try {
+              log('Testing function calling...', 'info', 'ai-output');
+              const response = await fetch('/api/ai/function', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  function: 'get_weather',
+                  arguments: { location: 'London' }
+                })
+              });
+              const data = await response.json();
+              
+              if (data.success) {
+                log('✅ Function Result: ' + data.result, 'success', 'ai-output');
+              } else {
+                log('❌ Function Error: ' + data.result, 'error', 'ai-output');
+              }
+            } catch (error) {
+              log('❌ Function call error: ' + error.message, 'error', 'ai-output');
+            }
+          }
+
+          async function testMCPProtocol() {
+            if (!aiInitialized) {
+              log('⚠️ Please initialize AI/ML system first', 'warning', 'ai-output');
+              return;
+            }
+            
+            try {
+              log('Testing MCP protocol...', 'info', 'ai-output');
+              
+              // Test MCP initialize
+              const response = await fetch('/api/ai/mcp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'initialize',
+                  params: {
+                    clientInfo: { name: 'IWA Test Client', version: '1.0.0' },
+                    capabilities: { llm: true, rag: true, functions: true }
+                  }
+                })
+              });
+              const data = await response.json();
+              
+              if (data.result) {
+                log('✅ MCP Initialize: ' + JSON.stringify(data.result, null, 2), 'success', 'ai-output');
+              } else {
+                log('❌ MCP Error: ' + JSON.stringify(data.error, null, 2), 'error', 'ai-output');
+              }
+            } catch (error) {
+              log('❌ MCP protocol error: ' + error.message, 'error', 'ai-output');
+            }
+          }
+
+          function updateAIStatus(status) {
+            const statusEl = document.getElementById('ai-status');
+            statusEl.className = 'ai-status';
+            
+            switch (status) {
+              case 'ready':
+                statusEl.className += ' ai-ready';
+                statusEl.innerHTML = '✅ AI/ML System Ready';
+                break;
+              case 'error':
+                statusEl.className += ' ai-error';
+                statusEl.innerHTML = '❌ AI/ML System Error';
+                break;
+              default:
+                statusEl.className += ' ai-initializing';
+                statusEl.innerHTML = '🔄 AI/ML System Initializing...';
+            }
           }
 
           async function testStatus() {
@@ -295,6 +550,9 @@ export class DemoServer {
             log('${serverType} Server Demo loaded successfully!', 'success');
             log('Server mode: ${this.serverMode.toUpperCase()}', 'info');
             ${this.serverMode === 'tls' ? "log('🔒 Secure connection active', 'success');" : ''}
+            
+            // Check AI status on load
+            setTimeout(checkAIStatus, 1000);
           });
         </script>
       </body>
@@ -434,6 +692,50 @@ export class DemoServer {
     }
   }
 
+  private async handleAIInitialization(response: HttpResponse): Promise<void> {
+    try {
+      if (!this.aimlServer) {
+        response.setStatus(503);
+        await response.json({
+          success: false,
+          error: 'AI/ML Server not available',
+          message: 'AI/ML server not initialized for this server mode'
+        });
+        return;
+      }
+
+      if (!this.aimlServer.isInitialized()) {
+        console.log('Initializing AI/ML server...');
+        await this.aimlServer.initialize();
+      }
+
+      await response.json({
+        success: true,
+        message: 'AI/ML Server initialized successfully',
+        features: {
+          mediaPipe: true,
+          kotlinJS: true,
+          mcp: true
+        },
+        endpoints: [
+          '/api/ai/mcp - MCP protocol endpoint',
+          '/api/ai/generate - Direct LLM generation',
+          '/api/ai/rag - RAG queries',
+          '/api/ai/function - Function calling',
+          '/api/ai/status - AI system status'
+        ]
+      });
+    } catch (error) {
+      console.error('AI initialization error:', error);
+      response.setStatus(500);
+      await response.json({
+        success: false,
+        error: 'AI initialization failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
   private async handle404(request: HttpRequest, response: HttpResponse): Promise<void> {
     response.setStatus(404);
     await response.json({
@@ -521,6 +823,14 @@ export class DemoServer {
       } else {
         await this.httpServer!.listen();
       }
+
+      // Initialize AI/ML server in background
+      if (this.aimlServer) {
+        console.log('Starting AI/ML server initialization...');
+        this.aimlServer.initialize().catch(error => {
+          console.warn('AI/ML server initialization failed (non-critical):', error);
+        });
+      }
     } catch (error) {
       console.error('Failed to start server:', error);
       this.isRunning = false;
@@ -536,6 +846,11 @@ export class DemoServer {
 
     try {
       console.log('Stopping server...');
+      
+      // Cleanup AI/ML server first
+      if (this.aimlServer) {
+        await this.aimlServer.cleanup();
+      }
       
       if (this.serverMode === 'tls' && this.tlsServer) {
         await this.tlsServer.close();

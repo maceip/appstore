@@ -217,6 +217,218 @@ await IWAServerTests.testWebSocket();
 await IWAServerTests.testCors();
 ```
 
+## MCP (Model Context Protocol) Configuration
+
+This project includes a built-in MCP server implementation that enables AI models to connect with external tools and data sources using standardized communication protocols.
+
+### MCP Server Features
+
+- **HTTP Resumable Transport**: Implements MCP specification with resumable HTTP transport
+- **Session Management**: Automatic session creation and cleanup
+- **JSON-RPC 2.0 Compliance**: Full JSON-RPC 2.0 protocol support
+- **Tool Integration**: Connect AI models with MediaPipe, Kotlin.js RAG, and function calling
+- **Real-time Communication**: WebSocket support for streaming AI responses
+
+### MCP Configuration
+
+The MCP server is automatically configured when the AI/ML server initializes. No additional configuration files are required.
+
+#### Default MCP Settings
+
+```typescript
+// MCP Server Configuration (automatically applied)
+const mcpConfig = {
+  endpoint: '/api/ai/mcp',
+  protocolVersion: '2025-03-26',
+  transport: 'http-resumable',
+  sessionTimeout: 300000, // 5 minutes
+  maxSessions: 100,
+  features: {
+    tools: true,
+    resources: true,
+    prompts: true,
+    sampling: true
+  }
+};
+```
+
+#### MCP Client Configuration
+
+To connect an MCP client to this server, use the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "iwa-local-server": {
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-H", "x-mcp-session-id: your-session-id",
+        "http://localhost:44818/api/ai/mcp"
+      ],
+      "transport": "http"
+    }
+  }
+}
+```
+
+#### Claude Desktop MCP Configuration
+
+For Claude Desktop integration, add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "iwa-project-templates": {
+      "command": "node",
+      "args": ["-e", "
+        const http = require('http');
+        const options = {
+          hostname: 'localhost',
+          port: 44818,
+          path: '/api/ai/mcp',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        };
+        process.stdin.on('data', (data) => {
+          const req = http.request(options, (res) => {
+            res.on('data', (chunk) => process.stdout.write(chunk));
+          });
+          req.write(data);
+          req.end();
+        });
+      "],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+The server exposes the following tools through the MCP protocol:
+
+#### Core Tools
+- `get_server_status` - Get current server status and capabilities
+- `list_endpoints` - List all available API endpoints
+- `get_system_info` - Retrieve system information and resource usage
+
+#### AI/ML Tools
+- `generate_text` - Generate text using local language models
+- `process_image` - Analyze images using MediaPipe computer vision
+- `execute_rag_query` - Perform retrieval-augmented generation queries
+- `call_function` - Execute Kotlin.js function calls
+- `get_embeddings` - Generate text embeddings for semantic search
+
+#### MediaPipe Tools
+- `detect_objects` - Object detection in images
+- `analyze_pose` - Human pose estimation
+- `recognize_gestures` - Hand gesture recognition
+- `segment_image` - Image segmentation and masking
+
+### MCP Usage Examples
+
+#### Initialize MCP Connection
+
+```bash
+curl -X POST http://localhost:44818/api/ai/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-03-26",
+      "capabilities": {
+        "tools": {},
+        "resources": {},
+        "prompts": {}
+      },
+      "clientInfo": {
+        "name": "test-client",
+        "version": "1.0.0"
+      }
+    }
+  }'
+```
+
+#### List Available Tools
+
+```bash
+curl -X POST http://localhost:44818/api/ai/mcp \
+  -H "Content-Type: application/json" \
+  -H "x-mcp-session-id: your-session-id" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list"
+  }'
+```
+
+#### Execute a Tool
+
+```bash
+curl -X POST http://localhost:44818/api/ai/mcp \
+  -H "Content-Type: application/json" \
+  -H "x-mcp-session-id: your-session-id" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "generate_text",
+      "arguments": {
+        "prompt": "Explain quantum computing",
+        "max_tokens": 100
+      }
+    }
+  }'
+```
+
+### MCP Session Management
+
+Sessions are automatically created and managed:
+
+- **Session Creation**: Automatic on first request or via `x-mcp-session-id` header
+- **Session Timeout**: 5 minutes of inactivity
+- **Session Cleanup**: Automatic cleanup every 5 minutes
+- **Session Persistence**: Messages stored for resumability
+
+### Troubleshooting MCP
+
+#### Common Issues
+
+1. **Connection Refused**: Ensure the IWA server is running on port 44818
+2. **Invalid JSON-RPC**: Verify `jsonrpc: "2.0"` is included in all requests
+3. **Session Expired**: Check session timeout and create a new session
+4. **Tool Not Found**: Use `tools/list` to see available tools
+
+#### Debug Mode
+
+Enable MCP debug logging by setting the debug flag:
+
+```javascript
+// In browser console when server is running
+localStorage.setItem('mcp-debug', 'true');
+// Reload the page to see detailed MCP logs
+```
+
+### MCP Protocol Compliance
+
+This implementation follows the official MCP specification:
+
+- **Protocol Version**: 2025-03-26
+- **Transport**: HTTP with resumable support
+- **Message Format**: JSON-RPC 2.0
+- **Capabilities**: Tools, Resources, Prompts, Sampling
+- **Error Handling**: Standard JSON-RPC error codes
+- **Session Management**: Custom session handling for HTTP transport
+
+For more information about the MCP protocol, visit: https://modelcontextprotocol.io/
+
 ## Architecture
 
 ### HTTP Server (`src/http-server.ts`)
