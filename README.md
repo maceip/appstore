@@ -74,6 +74,22 @@ The implementations we're using for core protocols:
 ### **LLM**
 - **[Claude Opus 4.1](claude-opus-4-1-20250805)** - Advanced AI model for intelligent code generation and system design
 
+### **Direct Sockets API**
+- **Adam Roach** (Mozilla) - API specification and implementation
+- **Thomas Nattestad** (Google) - API design and Chrome integration
+
+### **Isolated Web Apps (IWA)**
+- **Dominic Farolino** (Google) - IWA architecture and standards
+- **Luai Al-assar** (Google) - IWA implementation and tooling
+- **Alan Cutter** (Google) - IWA security and deployment
+
+### **WebAuthn**
+- **Michael B. Jones** (Microsoft) - Authentication standards and protocols
+- **Akshay Kumar** (Google) - WebAuthn implementation
+- **Jeff Hodges** (Google) - Security architecture
+- **J.C. Jones** (Mozilla) - Cross-browser compatibility
+- **Christiaan Brand** (Google) - Authentication UX and integration
+
 ## Project Structure
 
 ```
