@@ -9,6 +9,31 @@
 
 A browser embedable http server running inside an Isolated Web App (IWA) using the Direct Sockets API. TLS, QUIC, and WS are supported.
 
+## Motivations
+
+This project is driven by a vision of **decentralized local computing** where services run directly on user devices and participate in collaborative networks. Our core motivations include:
+
+### Local-First Architecture
+- **Device Autonomy**: Run powerful services directly on your local machine without relying on remote servers
+- **Privacy by Design**: Keep your data and processing local, reducing exposure to external services
+- **Offline Capability**: Maintain full functionality even without internet connectivity
+- **Resource Efficiency**: Leverage local computing power instead of consuming remote resources
+
+### Collaborative Network Participation
+- **Peer-to-Peer Services**: Enable devices to serve content and APIs to other devices in the network
+- **Distributed Computing**: Participate in distributed workloads where each device contributes processing power
+- **Local Service Discovery**: Automatically discover and connect to services running on nearby devices
+- **Edge Computing**: Bring computation closer to where data is generated and consumed
+
+### Local Serving Focus
+- **Direct Device Communication**: Bypass traditional client-server models with direct device-to-device communication
+- **Local API Ecosystems**: Create rich local API environments that can operate independently
+- **Reduced Latency**: Eliminate network round-trips by serving content directly from local devices
+- **Bandwidth Conservation**: Reduce internet bandwidth usage by serving content locally
+- **Community Networks**: Enable local communities to create their own service networks
+
+This approach represents a fundamental shift toward **user-controlled computing environments** where individuals and communities can run their own services, participate in local networks, and maintain sovereignty over their digital infrastructure.
+
 ## Chrome Installation & Quickstart
 
 ### Prerequisites
@@ -141,6 +166,32 @@ examples/
 - `POST /api/echo` - Echo back the request body
 - `WebSocket ws://localhost:44818/ws` - WebSocket echo server
 
+### AI/ML Endpoints
+
+The server includes integrated AI and machine learning capabilities for local processing:
+
+- `POST /api/ai/chat` - Local chat completion using embedded language models
+- `POST /api/ai/embedding` - Generate text embeddings for semantic search
+- `POST /api/ai/classification` - Text classification and sentiment analysis
+- `POST /api/ai/summarization` - Document summarization and key point extraction
+- `GET /api/ai/models` - List available local AI models and their capabilities
+- `POST /api/ai/vision` - Image analysis and object detection using MediaPipe
+- `POST /api/ai/audio` - Audio processing and speech recognition
+- `WebSocket ws://localhost:44818/ai-stream` - Real-time AI processing with streaming responses
+
+#### AI Model Management
+- `GET /api/ai/models/status` - Check model loading status and memory usage
+- `POST /api/ai/models/load` - Load specific AI models into memory
+- `POST /api/ai/models/unload` - Unload models to free memory
+- `GET /api/ai/models/benchmark` - Performance benchmarks for loaded models
+
+#### Edge AI Features
+- **Local Inference**: All AI processing happens locally without sending data to external services
+- **Model Caching**: Intelligent caching of frequently used models for faster response times
+- **Resource Management**: Automatic memory management and model lifecycle handling
+- **Multi-Modal Support**: Text, image, and audio processing capabilities
+- **Real-time Processing**: Streaming responses for interactive AI applications
+
 ### Testing the Server
 
 #### Option 1: Built-in Web Interface
@@ -263,6 +314,17 @@ The server includes proper CORS headers for Chrome's Private Network Access:
 - Runs in a secure IWA environment
 - No access to user's file system or sensitive APIs
 - Network access limited to Direct Sockets API
+
+### Controlled Frames
+- **What they are**: Controlled Frames allow IWAs to embed and control external web content within secure, sandboxed iframe-like containers with enhanced permissions and communication capabilities
+- **Benefits**: Enable secure integration of third-party services, controlled cross-origin communication, and the ability to grant specific permissions to embedded content while maintaining isolation
+- **Security model**: Provides fine-grained control over what embedded content can access, including network permissions, storage access, and API capabilities
+- **Potential abuse vectors**: 
+  - **Permission escalation**: Malicious embedded content could attempt to exploit granted permissions beyond intended scope
+  - **Data exfiltration**: Compromised frames might try to access or transmit sensitive local data through permitted communication channels
+  - **Resource exhaustion**: Embedded content could consume excessive system resources (CPU, memory, network) affecting the host IWA performance
+  - **Social engineering**: Malicious frames could present deceptive UI to trick users into granting additional permissions or revealing sensitive information
+- **Mitigation strategies**: Implement strict Content Security Policy (CSP), validate all frame communications, limit granted permissions to minimum required, and regularly audit embedded content sources
 
 ## Testing
 
