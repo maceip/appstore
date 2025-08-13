@@ -1,167 +1,368 @@
-# IWA project templates
+<div align="center">
+
+```
+          ▒▓▓██████████████████████████████████████████████████████████████▓▓▒           
+      ░▓████████████████████████████████████████████████████████████████████████▓░       
+    ▒██████████████████████████████████████████████████████████████████████████████▒     
+  ░██████████████████████████████████████████████████████████████████████████████████░   
+ ▒████████████████████████████████████████████████████████████████████████████████████▒  
+▒██████████████████████████████████████████████████████████████████████████████████████▒ 
+░████████████████████████████████████████████████████████████████████████████████████████░
+▓████████████████████████████████████████████████████████████████████████████████████████▓
+██████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████▓▒░░▓████▓▒░▒▓██████████████████████████████████████
+█████████████████████████████████████       ▓▓       █████████████████████████████████████
+████████████████████████████████████                  ████████████████████████████████████
+█████████████████████████████████████                █████████████████████████████████████
+██████████████████████████████████████              ██████████████████████████████████████
+███████████████████████████████████████░          ░███████████████████████████████████████
+████████████████████████████████████████         ░████████████████████████████████████████
+██████████████████████████████████████▓         ░█████████████████████████████████████████
+█████████████████████████████████████▒         ▒███▓▒█████████████████████████████████████
+████████████████████████████████████░         ████▒  ░████████████████████████████████████
+███████████████████████████████████░         ████░    ░███████████████████████████████████
+██████████████████████████████████░        ░████░       ██████████████████████████████████
+█████████████████████████████████         ░████░         █████████████████████████████████
+████████████████████████████████         ░██████░         ████████████████████████████████
+██████████████████████████████▒         ▒████████▒         ▒██████████████████████████████
+█████████████████████████████▒         ▓██████████▓         ▒█████████████████████████████
+██████████████████▓▓▓▓▓▓▓▓▓▓░         ▒▓▓▓▓▓▓▓▓▓████         ░▓▓▓▓▓▓▓▓▓▓██████████████████
+████████████████░                               ░████                    ░████████████████
+███████████████                                  ░████░                    ███████████████
+███████████████░                                   ████░                  ░███████████████
+████████████████▓░                                  ████▒               ░▓████████████████
+█████████████████████████████████████████████████████████▒         ▒██████████████████████
+███████████████████████████████████████████████████████████         ░█████████████████████
+████████████████████░         ██████████████████████████████         ░████████████████████
+███████████████████▓         ████████████████████████████████         ▓███████████████████
+████████████████████       ░██████████████████████████████████░       ████████████████████
+█████████████████████▓▒░░▒██████████████████████████████████████▒░░▒▓█████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████
+▓████████████████████████████████████████████████████████████████████████████████████████▓
+░████████████████████████████████████████████████████████████████████████████████████████░
+▒██████████████████████████████████████████████████████████████████████████████████████▒ 
+ ▒████████████████████████████████████████████████████████████████████████████████████▒  
+  ░██████████████████████████████████████████████████████████████████████████████████░   
+    ▒██████████████████████████████████████████████████████████████████████████████▒     
+      ░▓████████████████████████████████████████████████████████████████████████▓░       
+          ▒▓▓██████████████████████████████████████████████████████████████▓▓▒           
+```
+
+</div>
+
+# AppStore
+
+A powerful HTTP and WebSocket server running inside an Isolated Web App (IWA) using the Direct Sockets API.
+
+## 🚀 Chrome Installation & Quickstart
+
+### Prerequisites
+- Chrome browser (version 113+)
+- Direct Sockets API support
+
+### Step 1: Install Dependencies
+```bash
+bun install
+```
+
+### Step 2: Start Development Server
+```bash
+bun run dev
+```
+
+### Step 3: Install as Chrome App
+1. Open Chrome and navigate to `chrome://flags`
+2. Enable the following flags:
+   - `#enable-isolated-web-apps`
+   - `#enable-experimental-web-platform-features`
+   - `#unrestricted-usb` (if using USB features)
+3. Restart Chrome
+4. Navigate to the development server URL (typically `http://localhost:5173`)
+5. Click the "Install" button when prompted, or use the browser menu → "Install app"
+
+### Step 4: Launch AppStore
+1. Open Chrome Apps (chrome://apps) or find "AppStore" in your applications
+2. Click to launch the isolated web app
+3. Click "Start Server" to begin the HTTP/WebSocket server
+4. Server will be available at `http://localhost:44818`
+
+### Step 5: Test the Server
+- Click "Open Server Page" to access the built-in test interface
+- Or navigate directly to `http://localhost:44818` in any browser
+- Use the interactive test buttons to verify HTTP and WebSocket functionality
+
+## 🚀 Features
+
+- **HTTP/1.1 Server**: Full HTTP server with support for GET, POST, OPTIONS, and other methods
+- **WebSocket Server**: Real-time bidirectional communication with WebSocket protocol support
+- **CORS Support**: Proper Cross-Origin Resource Sharing headers for web compatibility
+- **Private Network Access**: Handles Chrome's Private Network Access requirements
+- **TypeScript**: Fully typed implementation with Direct Sockets API definitions
+- **Bun Integration**: Built with Bun for modern development experience
 
-This project will contain templates that could be used for creation of new Isolated Web Apps (IWAs)
-projects.
+## 🏆 Heroes
 
-## Prerequisites
+The implementations we're using for core protocols:
 
-- Google Chrome 140+
+### **QUIC**
+- **[MatrixAI js-quic](https://github.com/MatrixAI/js-quic)** - Pure JavaScript QUIC implementation with HTTP/3 and WebTransport support
 
-- openssl
+### **TLS** 
+- **[SubTLS](https://github.com/jawj/subtls)** - Lightweight TLS 1.3 implementation in TypeScript for browsers and Deno
 
-- npm
+### **HTTP**
+- **Custom HTTP/1.1 Implementation** - Built from scratch using Direct Sockets API with full RFC compliance
 
-## Using this repository
+### **WebSocket**
+- **Custom WebSocket Implementation** - RFC 6455 compliant WebSocket server with frame parsing and connection management
 
-Clone this repository:
+### **LLM**
+- **[Claude Opus 4.1](claude-opus-4-1-20250805)** - Advanced AI model for intelligent code generation and system design
 
-    git clone ADD_LINK_HERE
+## 📁 Project Structure
 
-    cd iwa_vite_template
+```
+src/
+├── main.ts                 # Main IWA application with server UI
+├── server.ts              # Demo server implementation
+├── http-server.ts         # Core HTTP server class
+├── websocket-server.ts    # WebSocket connection handler
+├── direct-sockets.d.ts    # TypeScript definitions for Direct Sockets API
+├── service-worker.ts      # Service worker for offline support
+└── style.css             # Application styles
 
-    npm install
+examples/
+├── test-http.html         # Interactive HTML test client
+└── test-client.js         # Programmatic test utilities
+```
 
-Open Google Chrome, go to `chrome://flags` and enable
+## 🛠️ Development Setup
 
-    chrome://flags/#enable-isolated-web-app-dev-mode
+1. **Clone and install dependencies:**
+   ```bash
+   bun install
+   ```
 
-    chrome://flags/#enable-isolated-web-apps (MacOS/Windows/Linux only)
+2. **Start development server:**
+   ```bash
+   bun run dev
+   ```
 
-Once enabled, and chrome is restarted, go to `chrome://web-app-internals`, the web app internals
-page. This page shows you the web apps you have installed, including Isolated Web Apps and
-Progressive Web Apps, with details for each.
+3. **Build for production:**
+   ```bash
+   bun run build
+   ```
 
-You'll know everything is correct if you see the "Isolated Web Apps" section at the top of the page.
+## 🔧 Usage
 
-### Installing the IWA through the dev proxy
+### Starting the HTTP Server
+
+1. Open your AppStore IWA in Chrome with Direct Sockets support
+2. Click the "Start Server" button in the UI
+3. The server will start on `http://localhost:44818`
+4. Click "Open Server Page" to test the server
 
-Run:
-
-`npm run dev`
-
-Then, navigate to:
-
-`chrome://web-app-internals`
-
-Look for a field called "Install IWA via Dev Mode Proxy", type in your localhost url, then click
-Install
-
-If everything installed correctly, you should see
-
-Installing IWA: http://localhost:PORT/ successfully installed
-
-Congratulations! You have installed your very own isolated web app
-
-_Note: If your development server shuts down or is unreachable, you won't be able to access or
-install your Isolated Web App_
-
-### Installing the IWA through a Signed Web Bundle
-
-If you want to install your IWA through a .swbn file, you will need to generate a signing key, use
-openssl to generate and encrypt a Ed25519 or ECDSA P-256 key
-
-    #Generate an unencrypted Ed25519 key
-
-    openssl genpkey -algorithm Ed25519 -out private_key.pem
-
-    #Or Generate an unencrypted ECDSA P-256 key
-
-    openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
-
-    #Encrypt the private key. Using a strong passphrase (which you will be
-    #prompted for) is highly recommended to protect the key from unauthorized
-    #use if the file is ever compromised.
-
-    openssl pkcs8 -in private_key.pem -topk8 -out encrypted_key.pem
-
-    #Remove the unencrypted key
-
-    rm private_key.pem
-
-Next, create a .env file containing:
-
-    PRIVATE_KEY_PATH='PATH_TO_YOUR_ENCRYPTED_KEY'
-    PRIVATE_KEY_PASSWORD='YOUR_KEY_PASSWORD'
-    PORT=YOUR_PORT
-
-_Note: If you're using vite, also declare a variable called NODE_ENV, you can set it to either
-production/development_
-
-_Note: If you don't specify PORT, the app will fall back to default value (4321)_
-
-Next, you need to build your IWA by running
-
-    npm run build
-
-This process will generate:
-
-- A .swbn file named iwa-template.swbn in the /dist folder.
-- Your Web Bundle ID, displayed in the terminal
-
-Navigate to `chrome://web-app-internals`, look for "Install IWA from Signed Web Bundle" field, click
-"Select File", upload your .swbn file.
-
-If everything went correctly, you should see a field:
-
-Installing IWA: successfully installed (Web Bundle ID:
-slu74sbybztfypa43w7f7rd34cbhautjcrfegz5lbow7vmwjojbqaaic).
-
-_Note: Your web bundle ID will look differently, this is just an example_
-
-To run your newly installed Isolated Web App, use chrome://apps (Windows/Mac/Linux only) or by
-running it like any other application on your desktop.
-
-### Personalizing this template
-
-- How do I change the icon?
-
-Navigate to /public/images/, change icon file, and update /public/.well-known/manifest.webmanifest
-"icons" field accordingly.
-
-_Note: Isolated Web Apps require at least one icon of 144x144px size._
-
-Related information:
-[Define your app icons - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/How_to/Define_app_icons)
-
-- Updating the Manifest
-
-Isolated Web Apps share the same
-[Manifest Properties](https://web.dev/articles/add-manifest#manifest-properties) as Progressive Web
-Apps, with some slight variations, see:
-
-There are two fields that should be included, `version` and `update_manifest_url`
-
-1. `version` - Required for Isolated Web Apps. A string consisting of one or more integers separated
-   by a dot (.). Your version can be something simple like 1, 2, 3, etc…, or something complex like
-   [SemVer](https://semver.org/)⁠ (1.2.3).
-
-2. `update_manifest_url` - Optional, but recommended field that points to an HTTPS URL (or localhost
-   for testing) where a Web Application Update Manifest can be retrieved.
-
-- How to add API Permissions?
-
-By default, Chrome blocks all permission requests from IWAs. You can opt-in to permission policies
-you need by specifying a `permissions_policy` field in your manifest.
-
-_Note: Adding a permission here does not automatically grant it, it just makes it avaliable to be
-granted, when a request for that capacity is made._
-
-    #permission policy example
-    "permissions_policy": {
-        "geolocation": [ "self", "https://map.example.com" ],
-        "direct-sockets": ["self"],
-        "controlled-frame": ["self"]
-    }
-
-Related Information
-
-- [Permissions Policy - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy#allowlists)
-- [Permissions Policy header - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy)
-- [Web Application Manifest - MDN Docs](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest)
-
-### Related Information
-
-- [Isolated Web Apps Explainer](https://chromeos.dev/en/web/isolated-web-apps)
-- [IWA Kitchen Sink](https://github.com/chromeos/iwa-sink)
-- [IWA Telnet Client](https://github.com/GoogleChromeLabs/telnet-client/tree/main)
-- [IWA Smartcard Demo](https://github.com/GoogleChromeLabs/web-smartcard-demo/tree/main)
+### Available Endpoints
+
+- `GET /` - Server homepage with interactive tests
+- `GET /api/status` - Server status and information
+- `GET /api/time` - Current server time
+- `POST /api/echo` - Echo back the request body
+- `WebSocket ws://localhost:44818/ws` - WebSocket echo server
+
+### Testing the Server
+
+#### Option 1: Built-in Web Interface
+1. Start the server in your IWA
+2. Click "Open Server Page" 
+3. Use the interactive test buttons
+
+#### Option 2: External Test Client
+1. Open `examples/test-http.html` in any browser
+2. Use the test buttons to verify functionality
+
+#### Option 3: Programmatic Testing
+```javascript
+// Load the test utilities
+// In browser console or include examples/test-client.js
+
+// Run all tests
+await IWAServerTests.runAllTests();
+
+// Or run individual tests
+await IWAServerTests.testHttpEndpoints();
+await IWAServerTests.testWebSocket();
+await IWAServerTests.testCors();
+```
+
+## 🏗️ Architecture
+
+### HTTP Server (`src/http-server.ts`)
+
+The `HttpServer` class provides a complete HTTP/1.1 server implementation:
+
+```typescript
+import { HttpServer } from './http-server.js';
+
+const server = new HttpServer({
+  host: '0.0.0.0',
+  port: 44818,
+  onRequest: async (request, response) => {
+    // Handle HTTP requests
+    await response.json({ message: 'Hello World!' });
+  },
+  onWebSocket: async (ws) => {
+    // Handle WebSocket connections
+    await ws.send('Welcome!');
+  }
+});
+
+await server.listen();
+```
+
+### WebSocket Server (`src/websocket-server.ts`)
+
+The `WebSocketConnection` class handles WebSocket protocol:
+
+```typescript
+import { WebSocketConnection } from './websocket-server.js';
+
+// WebSocket connection is automatically created during HTTP upgrade
+// Handle incoming messages:
+const reader = ws.incomingStream.getReader();
+while (!ws.closed) {
+  const { value } = await reader.read();
+  const { opcode, payload } = value;
+  
+  if (opcode === ws.opcodes.TEXT) {
+    const message = new TextDecoder().decode(payload);
+    await ws.send(`Echo: ${message}`);
+  }
+}
+```
+
+### Direct Sockets Integration
+
+The server uses Chrome's Direct Sockets API:
+
+```typescript
+// Create TCP server socket
+const socket = new TCPServerSocket('0.0.0.0', { localPort: 44818 });
+const { readable: server } = await socket.opened;
+
+// Handle incoming connections
+await server.pipeTo(new WritableStream({
+  write: async (connection) => {
+    const { readable, writable } = await connection.opened;
+    // Handle HTTP/WebSocket protocols
+  }
+}));
+```
+
+## 🔒 Security Considerations
+
+### Private Network Access
+The server includes proper CORS headers for Chrome's Private Network Access:
+- `Access-Control-Allow-Private-Network: true`
+- `Access-Control-Allow-Origin: *`
+- Handles OPTIONS preflight requests
+
+### Isolated Web App Context
+- Runs in a secure IWA environment
+- No access to user's file system or sensitive APIs
+- Network access limited to Direct Sockets API
+
+## 🧪 Testing
+
+### Chrome Launch Flags
+For testing, launch Chrome with:
+```bash
+chrome --unsafely-treat-insecure-origin-as-secure=http://localhost:44818
+```
+
+### Test Scenarios
+1. **HTTP Requests**: GET, POST, OPTIONS methods
+2. **WebSocket**: Connection, messaging, close handling
+3. **CORS**: Preflight requests and headers
+4. **Error Handling**: 404 responses, malformed requests
+
+## 📚 API Reference
+
+### HttpServer Class
+
+```typescript
+class HttpServer {
+  constructor(options: HttpServerOptions)
+  async listen(): Promise<void>
+  async close(): Promise<void>
+}
+
+interface HttpServerOptions {
+  host?: string;
+  port?: number;
+  onRequest?: (request: HttpRequest, response: HttpResponse) => Promise<void>;
+  onWebSocket?: (ws: WebSocketConnection) => Promise<void>;
+}
+```
+
+### HttpResponse Class
+
+```typescript
+class HttpResponse {
+  setStatus(code: number, text?: string): void
+  setHeader(name: string, value: string): void
+  async write(data: string | Uint8Array): Promise<void>
+  async end(data?: string | Uint8Array): Promise<void>
+  async json(obj: any): Promise<void>
+  async text(text: string): Promise<void>
+  async html(html: string): Promise<void>
+}
+```
+
+### WebSocketConnection Class
+
+```typescript
+class WebSocketConnection {
+  readonly incomingStream: ReadableStream<{opcode: number, payload: Uint8Array}>
+  readonly opcodes: { TEXT: 1, BINARY: 2, PING: 9, PONG: 10, CLOSE: 8 }
+  
+  async send(data: string | Uint8Array): Promise<void>
+  async close(code?: number, reason?: string): Promise<void>
+}
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the original license headers in the source files.
+
+## 🔗 References
+
+- [WICG Direct Sockets Specification](https://wicg.github.io/direct-sockets/)
+- [Isolated Web Apps](https://github.com/WICG/isolated-web-apps)
+- [Private Network Access](https://developer.chrome.com/blog/private-network-access-preflight)
+- [WebSocket Protocol RFC 6455](https://tools.ietf.org/html/rfc6455)
+- [HTTP/1.1 Specification](https://tools.ietf.org/html/rfc7230)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Server won't start**: Ensure Chrome supports Direct Sockets and IWA is properly installed
+2. **CORS errors**: Check that proper headers are being sent
+3. **WebSocket connection fails**: Verify the WebSocket URL and protocol
+4. **Port already in use**: Change the port in server configuration
+
+### Debug Tips
+
+1. Check browser console for errors
+2. Use Chrome DevTools Network tab to inspect requests
+3. Enable verbose logging in the server code
+4. Test with the provided example clients first
