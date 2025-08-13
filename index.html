@@ -1496,6 +1496,7 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
+            setupKeyboardShortcuts();
         });
 
         function initializeApp() {
@@ -1624,14 +1625,43 @@
         function viewDocs() {
             showNotification('📚 Opening documentation...', 'info');
             setTimeout(() => {
-                window.open('https://chromeos.dev/en/web/isolated-web-apps', '_blank');
+                // First try to open the README, fallback to external docs
+                const readmeUrl = './README.md';
+                const externalDocsUrl = 'https://chromeos.dev/en/web/isolated-web-apps';
+                
+                // Try to open README first
+                fetch(readmeUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            window.open(readmeUrl, '_blank');
+                        } else {
+                            window.open(externalDocsUrl, '_blank');
+                        }
+                    })
+                    .catch(() => {
+                        window.open(externalDocsUrl, '_blank');
+                    });
             }, 500);
         }
 
         function viewServerCode() {
             showNotification('👁️ Opening source code...', 'info');
             setTimeout(() => {
-                window.open('./src/server.ts', '_blank');
+                // Try to open the server source file
+                const serverCodeUrl = './src/server.ts';
+                const githubUrl = 'https://github.com/maceip/appstore';
+                
+                fetch(serverCodeUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            window.open(serverCodeUrl, '_blank');
+                        } else {
+                            window.open(githubUrl, '_blank');
+                        }
+                    })
+                    .catch(() => {
+                        window.open(githubUrl, '_blank');
+                    });
             }, 500);
         }
 
@@ -1805,6 +1835,133 @@
             const modal = document.getElementById('featureModal');
             modal.classList.remove('active');
         }
+
+        // Keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + K to open quick start
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    quickStart();
+                }
+                
+                // Ctrl/Cmd + D to open docs
+                if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                    e.preventDefault();
+                    viewDocs();
+                }
+                
+                // Ctrl/Cmd + T to run tests
+                if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                    e.preventDefault();
+                    launchAIDemo();
+                }
+                
+                // Escape to close modal
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }</search_block>
+</edit>
+
+<edit>
+<search_block>        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28ca42' : type === 'error' ? '#ff5f57' : '#4facfe'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 10001;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after delay
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }</search_block>
+<replace_block>        // Enhanced notification system with keyboard shortcuts info
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28ca42' : type === 'error' ? '#ff5f57' : '#4facfe'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 10001;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                max-width: 350px;
+            `;
+            
+            // Add keyboard shortcut info for first-time users
+            if (message.includes('Quick start') && !localStorage.getItem('shortcuts-shown')) {
+                message += '\n💡 Tip: Use Ctrl+K for quick start, Ctrl+D for docs, Ctrl+T for tests';
+                localStorage.setItem('shortcuts-shown', 'true');
+                notification.style.whiteSpace = 'pre-line';
+                notification.style.fontSize = '0.9rem';
+                notification.style.lineHeight = '1.4';
+            }
+            
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after delay (longer for tips)
+            const delay = message.includes('💡 Tip:') ? 5000 : 3000;
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, delay);
+        }</search_block>
+</edit>
+
+<edit>
+<search_block>        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });</search_block>
+<replace_block>
 
         // Notification system
         function showNotification(message, type = 'info') {
