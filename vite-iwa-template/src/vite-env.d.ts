@@ -15,3 +15,4 @@
  */
 
 /// <reference types="vite/client" />
+/// <reference path="./direct-sockets.d.ts" />

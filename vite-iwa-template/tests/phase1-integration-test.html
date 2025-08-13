@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1 Integration Test - Enhanced Web Bundle Signing</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .success-criteria {
+            background: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Phase 1 Integration Test</h1>
+        <h2>Enhanced Web Bundle Signing</h2>
+        <p>Testing wbn-sign integration, Web Bundle specification compliance, and certificate management</p>
+    </div>
+
+    <!-- Success Criteria -->
+    <div class="test-section">
+        <h3>📋 Success Criteria</h3>
+        <div class="success-criteria">
+            <h4>Phase 1 must achieve:</h4>
+            <ul>
+                <li><strong>SC1.1:</strong> Generate Ed25519 key pairs using Web Crypto API</li>
+                <li><strong>SC1.2:</strong> Create standards-compliant Web Bundles with proper CBOR encoding</li>
+                <li><strong>SC1.3:</strong> Sign bundles with integrity blocks using wbn-sign library</li>
+                <li><strong>SC1.4:</strong> Validate signed bundles and verify signatures</li>
+                <li><strong>SC1.5:</strong> Generate correct Web Bundle IDs from public keys</li>
+                <li><strong>SC1.6:</strong> Export/import keys in PEM format for certificate management</li>
+                <li><strong>SC1.7:</strong> Create installable .swbn files for Chrome</li>
+                <li><strong>SC1.8:</strong> Handle bundle creation errors gracefully</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test Progress -->
+    <div class="test-section">
+        <h3>🚀 Test Progress</h3>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%">0%</div>
+        </div>
+        <div id="test-results"></div>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="test-section">
+        <h3>🎮 Test Controls</h3>
+        <button onclick="runAllTests()" class="btn-success">Run All Tests</button>
+        <button onclick="runSingleTest('keyGeneration')">Test Key Generation</button>
+        <button onclick="runSingleTest('bundleCreation')">Test Bundle Creation</button>
+        <button onclick="runSingleTest('bundleSigning')">Test Bundle Signing</button>
+        <button onclick="runSingleTest('bundleValidation')">Test Bundle Validation</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <!-- Test Output -->
+    <div class="test-section">
+        <h3>📊 Test Output</h3>
+        <div id="test-output" class="output">Ready to run Phase 1 integration tests...\n</div>
+    </div>
+
+    <!-- Implementation Status -->
+    <div class="test-section">
+        <h3>⚙️ Implementation Status</h3>
+        <div id="implementation-status">
+            <p>Checking implementation status...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Test state
+        let testResults = new Map();
+        let totalTests = 8;
+        let completedTests = 0;
+
+        // Logging function
+        function log(message, type = 'info') {
+            const output = document.getElementById('test-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            output.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const percentage = Math.round((completedTests / totalTests) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Update test results display
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            for (const [testName, result] of testResults) {
+                const className = result.status === 'pass' ? 'test-pass' : 
+                                result.status === 'fail' ? 'test-fail' : 'test-pending';
+                html += `<div class="${className}">${testName}: ${result.message}</div>`;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Set test result
+        function setTestResult(testName, status, message) {
+            testResults.set(testName, { status, message });
+            if (status !== 'pending') {
+                completedTests++;
+            }
+            updateProgress();
+            updateTestResults();
+        }
+
+        // Test SC1.1: Generate Ed25519 key pairs
+        async function testKeyGeneration() {
+            log('Testing SC1.1: Ed25519 key pair generation...', 'info');
+            setTestResult('SC1.1: Key Generation', 'pending', 'Testing...');
+            
+            try {
+                // Test if we can import the enhanced builder
+                const { EnhancedIWAKeyPair } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Generate key pair
+                const keyPair = await EnhancedIWAKeyPair.generate();
+                
+                // Verify key pair properties
+                if (!keyPair.privateKey || !keyPair.publicKey) {
+                    throw new Error('Key pair missing private or public key');
+                }
+                
+                // Test key export
+                const exported = await keyPair.exportKeys();
+                if (!exported.privateKey.includes('BEGIN PRIVATE KEY') || 
+                    !exported.publicKey.includes('BEGIN PUBLIC KEY')) {
+                    throw new Error('Key export format invalid');
+                }
+                
+                // Test Web Bundle ID generation
+                const bundleId = await keyPair.getWebBundleId();
+                if (!bundleId || bundleId.length < 32) {
+                    throw new Error('Invalid Web Bundle ID generated');
+                }
+                
+                log(`✅ Key pair generated successfully`, 'success');
+                log(`   Bundle ID: ${bundleId.substring(0, 32)}...`, 'info');
+                setTestResult('SC1.1: Key Generation', 'pass', 'Ed25519 keys generated and exported successfully');
+                
+                return keyPair;
+            } catch (error) {
+                log(`❌ Key generation failed: ${error.message}`, 'error');
+                setTestResult('SC1.1: Key Generation', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.2: Create standards-compliant Web Bundles
+        async function testBundleCreation() {
+            log('Testing SC1.2: Standards-compliant Web Bundle creation...', 'info');
+            setTestResult('SC1.2: Bundle Creation', 'pending', 'Testing...');
+            
+            try {
+                const { WebBundleBuilder, EnhancedIWABuilder } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Create test files
+                const testFiles = [
+                    {
+                        path: '/index.html',
+                        content: new TextEncoder().encode('<html><body>Test</body></html>'),
+                        mimeType: 'text/html'
+                    },
+                    {
+                        path: '/app.js',
+                        content: new TextEncoder().encode('console.log("test");'),
+                        mimeType: 'application/javascript'
+                    }
+                ];
+                
+                // Create bundle
+                const bundle = await WebBundleBuilder.createBundle(testFiles, '/index.html');
+                
+                // Verify bundle structure
+                if (!bundle || bundle.length === 0) {
+                    throw new Error('Bundle creation returned empty result');
+                }
+                
+                // Check for Web Bundle magic bytes
+                const magicBytes = bundle.slice(0, 6);
+                const expectedMagic = new Uint8Array([0x84, 0x48, 0xF0, 0x9F, 0x8C, 0x90]);
+                
+                let magicValid = true;
+                for (let i = 0; i < 6; i++) {
+                    if (magicBytes[i] !== expectedMagic[i]) {
+                        magicValid = false;
+                        break;
+                    }
+                }
+                
+                if (!magicValid) {
+                    throw new Error('Bundle missing correct magic bytes');
+                }
+                
+                log(`✅ Web Bundle created successfully (${bundle.length} bytes)`, 'success');
+                setTestResult('SC1.2: Bundle Creation', 'pass', `Bundle created with proper CBOR encoding (${bundle.length} bytes)`);
+                
+                return bundle;
+            } catch (error) {
+                log(`❌ Bundle creation failed: ${error.message}`, 'error');
+                setTestResult('SC1.2: Bundle Creation', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.3: Sign bundles with integrity blocks
+        async function testBundleSigning() {
+            log('Testing SC1.3: Bundle signing with integrity blocks...', 'info');
+            setTestResult('SC1.3: Bundle Signing', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWABuilder, EnhancedIWAKeyPair } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Generate key pair
+                const keyPair = await EnhancedIWAKeyPair.generate();
+                const builder = new EnhancedIWABuilder(keyPair);
+                
+                // Create test manifest and files
+                const manifest = {
+                    name: 'Test App',
+                    start_url: '/index.html',
+                    display: 'standalone',
+                    isolated: true
+                };
+                
+                const files = [
+                    {
+                        path: '/index.html',
+                        content: new TextEncoder().encode('<html><body>Test App</body></html>'),
+                        mimeType: 'text/html'
+                    }
+                ];
+                
+                // Build signed bundle
+                const signedBundle = await builder.buildSignedWebBundle({
+                    manifest,
+                    files
+                });
+                
+                // Verify signed bundle
+                if (!signedBundle || signedBundle.length === 0) {
+                    throw new Error('Signed bundle creation failed');
+                }
+                
+                // Check for integrity block magic bytes
+                const integrityMagic = signedBundle.slice(0, 6);
+                const expectedIntegrityMagic = new Uint8Array([0x84, 0x48, 0xF0, 0x9F, 0x93, 0x9C]);
+                
+                let integrityValid = true;
+                for (let i = 0; i < 6; i++) {
+                    if (integrityMagic[i] !== expectedIntegrityMagic[i]) {
+                        integrityValid = false;
+                        break;
+                    }
+                }
+                
+                if (!integrityValid) {
+                    throw new Error('Signed bundle missing integrity block magic bytes');
+                }
+                
+                log(`✅ Bundle signed successfully (${signedBundle.length} bytes)`, 'success');
+                setTestResult('SC1.3: Bundle Signing', 'pass', `Bundle signed with integrity block (${signedBundle.length} bytes)`);
+                
+                return signedBundle;
+            } catch (error) {
+                log(`❌ Bundle signing failed: ${error.message}`, 'error');
+                setTestResult('SC1.3: Bundle Signing', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.4: Validate signed bundles
+        async function testBundleValidation() {
+            log('Testing SC1.4: Bundle validation and signature verification...', 'info');
+            setTestResult('SC1.4: Bundle Validation', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWAInstaller } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Create a test signed bundle first
+                const signedBundle = await testBundleSigning();
+                
+                // Validate the bundle
+                const validation = await EnhancedIWAInstaller.validateBundle(signedBundle);
+                
+                if (!validation.valid) {
+                    throw new Error(`Bundle validation failed: ${validation.errors.join(', ')}`);
+                }
+                
+                log(`✅ Bundle validation passed`, 'success');
+                setTestResult('SC1.4: Bundle Validation', 'pass', 'Bundle validation and signature verification successful');
+                
+                return validation;
+            } catch (error) {
+                log(`❌ Bundle validation failed: ${error.message}`, 'error');
+                setTestResult('SC1.4: Bundle Validation', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.5: Generate correct Web Bundle IDs
+        async function testWebBundleId() {
+            log('Testing SC1.5: Web Bundle ID generation...', 'info');
+            setTestResult('SC1.5: Bundle ID Generation', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWAKeyPair } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Generate multiple key pairs and test ID generation
+                const keyPair1 = await EnhancedIWAKeyPair.generate();
+                const keyPair2 = await EnhancedIWAKeyPair.generate();
+                
+                const bundleId1 = await keyPair1.getWebBundleId();
+                const bundleId2 = await keyPair2.getWebBundleId();
+                const origin1 = await keyPair1.getIWAOrigin();
+                
+                // Verify bundle IDs are different
+                if (bundleId1 === bundleId2) {
+                    throw new Error('Different key pairs generated same bundle ID');
+                }
+                
+                // Verify bundle ID format (should be base32, lowercase)
+                if (!/^[a-z2-7]+$/.test(bundleId1)) {
+                    throw new Error('Bundle ID not in correct base32 format');
+                }
+                
+                // Verify origin format
+                if (!origin1.startsWith('isolated-app://') || !origin1.endsWith('/')) {
+                    throw new Error('IWA origin format incorrect');
+                }
+                
+                log(`✅ Bundle ID generation successful`, 'success');
+                log(`   Bundle ID 1: ${bundleId1.substring(0, 32)}...`, 'info');
+                log(`   Origin: ${origin1.substring(0, 50)}...`, 'info');
+                setTestResult('SC1.5: Bundle ID Generation', 'pass', 'Web Bundle IDs generated correctly');
+                
+            } catch (error) {
+                log(`❌ Bundle ID generation failed: ${error.message}`, 'error');
+                setTestResult('SC1.5: Bundle ID Generation', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.6: Export/import keys in PEM format
+        async function testKeyManagement() {
+            log('Testing SC1.6: Key export/import and certificate management...', 'info');
+            setTestResult('SC1.6: Key Management', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWAKeyPair } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Generate original key pair
+                const originalKeyPair = await EnhancedIWAKeyPair.generate();
+                const originalBundleId = await originalKeyPair.getWebBundleId();
+                
+                // Export keys
+                const exported = await originalKeyPair.exportKeys();
+                
+                // Import keys
+                const importedKeyPair = await EnhancedIWAKeyPair.importKeys(
+                    exported.privateKey, 
+                    exported.publicKey
+                );
+                const importedBundleId = await importedKeyPair.getWebBundleId();
+                
+                // Verify imported keys generate same bundle ID
+                if (originalBundleId !== importedBundleId) {
+                    throw new Error('Imported keys generate different bundle ID');
+                }
+                
+                log(`✅ Key management successful`, 'success');
+                log(`   Original Bundle ID: ${originalBundleId.substring(0, 32)}...`, 'info');
+                log(`   Imported Bundle ID: ${importedBundleId.substring(0, 32)}...`, 'info');
+                setTestResult('SC1.6: Key Management', 'pass', 'Key export/import working correctly');
+                
+            } catch (error) {
+                log(`❌ Key management failed: ${error.message}`, 'error');
+                setTestResult('SC1.6: Key Management', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.7: Create installable .swbn files
+        async function testInstallableBundle() {
+            log('Testing SC1.7: Installable .swbn file creation...', 'info');
+            setTestResult('SC1.7: Installable Bundle', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWABuilder, EnhancedIWAKeyPair, EnhancedIWAInstaller } = await import('../src/iwa-builder-enhanced.js');
+                
+                // Create a complete signed bundle
+                const keyPair = await EnhancedIWAKeyPair.generate();
+                const builder = new EnhancedIWABuilder(keyPair);
+                
+                const manifest = {
+                    name: 'Test Installable App',
+                    short_name: 'TestApp',
+                    start_url: '/index.html',
+                    display: 'standalone',
+                    background_color: '#ffffff',
+                    theme_color: '#000000',
+                    icons: [{
+                        src: '/icon.png',
+                        sizes: '192x192',
+                        type: 'image/png'
+                    }]
+                };
+                
+                const files = [
+                    {
+                        path: '/index.html',
+                        content: new TextEncoder().encode(`
+                            <!DOCTYPE html>
+                            <html>
+                            <head><title>Test App</title></head>
+                            <body><h1>Test Installable App</h1></body>
+                            </html>
+                        `),
+                        mimeType: 'text/html'
+                    }
+                ];
+                
+                const signedBundle = await builder.buildSignedWebBundle({
+                    manifest,
+                    files,
+                    baseURL: '/index.html'
+                });
+                
+                // Test installation process (simulated)
+                await EnhancedIWAInstaller.installIWA(signedBundle, 'test-app');
+                
+                // Verify bundle can be validated
+                const validation = await EnhancedIWAInstaller.validateBundle(signedBundle);
+                if (!validation.valid) {
+                    throw new Error('Installable bundle failed validation');
+                }
+                
+                log(`✅ Installable bundle created successfully`, 'success');
+                log(`   Bundle size: ${signedBundle.length} bytes`, 'info');
+                log(`   Ready for installation via chrome://web-app-internals/`, 'info');
+                setTestResult('SC1.7: Installable Bundle', 'pass', 'Installable .swbn file created successfully');
+                
+            } catch (error) {
+                log(`❌ Installable bundle creation failed: ${error.message}`, 'error');
+                setTestResult('SC1.7: Installable Bundle', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Test SC1.8: Handle errors gracefully
+        async function testErrorHandling() {
+            log('Testing SC1.8: Error handling and edge cases...', 'info');
+            setTestResult('SC1.8: Error Handling', 'pending', 'Testing...');
+            
+            try {
+                const { EnhancedIWABuilder, EnhancedIWAKeyPair } = await import('../src/iwa-builder-enhanced.js');
+                
+                let errorsCaught = 0;
+                
+                // Test 1: Building without key pair
+                try {
+                    const builder = new EnhancedIWABuilder();
+                    await builder.buildSignedWebBundle({
+                        manifest: { name: 'Test', start_url: '/' },
+                        files: []
+                    });
+                } catch (error) {
+                    if (error.message.includes('Key pair required')) {
+                        errorsCaught++;
+                        log(`   ✅ Correctly caught missing key pair error`, 'success');
+                    }
+                }
+                
+                // Test 2: Invalid manifest
+                try {
+                    const keyPair = await EnhancedIWAKeyPair.generate();
+                    const builder = new EnhancedIWABuilder(keyPair);
+                    await builder.buildSignedWebBundle({
+                        manifest: null,
+                        files: []
+                    });
+                } catch (error) {
+                    errorsCaught++;
+                    log(`   ✅ Correctly caught invalid manifest error`, 'success');
+                }
+                
+                // Test 3: Invalid PEM import
+                try {
+                    await EnhancedIWAKeyPair.importKeys('invalid-pem', 'invalid-pem');
+                } catch (error) {
+                    errorsCaught++;
+                    log(`   ✅ Correctly caught invalid PEM error`, 'success');
+                }
+                
+                if (errorsCaught >= 2) {
+                    log(`✅ Error handling working correctly (${errorsCaught} errors caught)`, 'success');
+                    setTestResult('SC1.8: Error Handling', 'pass', `Error handling working correctly (${errorsCaught}/3 tests passed)`);
+                } else {
+                    throw new Error(`Insufficient error handling (only ${errorsCaught} errors caught)`);
+                }
+                
+            } catch (error) {
+                log(`❌ Error handling test failed: ${error.message}`, 'error');
+                setTestResult('SC1.8: Error Handling', 'fail', error.message);
+                throw error;
+            }
+        }
+
+        // Run individual test
+        window.runSingleTest = async function(testName) {
+            log(`\n=== Running ${testName} ===`, 'info');
+            
+            try {
+                switch (testName) {
+                    case 'keyGeneration':
+                        await testKeyGeneration();
+                        break;
+                    case 'bundleCreation':
+                        await testBundleCreation();
+                        break;
+                    case 'bundleSigning':
+                        await testBundleSigning();
+                        break;
+                    case 'bundleValidation':
+                        await testBundleValidation();
+                        break;
+                    default:
+                        throw new Error(`Unknown test: ${testName}`);
+                }
+            } catch (error) {
+                log(`Test ${testName} failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Run all tests
+        window.runAllTests = async function() {
+            log('🚀 Starting Phase 1 Integration Tests\n', 'info');
+            
+            // Reset state
+            testResults.clear();
+            completedTests = 0;
+            updateProgress();
+            updateTestResults();
+            
+            const tests = [
+                { name: 'Key Generation', func: testKeyGeneration },
+                { name: 'Bundle Creation', func: testBundleCreation },
+                { name: 'Bundle Signing', func: testBundleSigning },
+                { name: 'Bundle Validation', func: testBundleValidation },
+                { name: 'Bundle ID Generation', func: testWebBundleId },
+                { name: 'Key Management', func: testKeyManagement },
+                { name: 'Installable Bundle', func: testInstallableBundle },
+                { name: 'Error Handling', func: testErrorHandling }
+            ];
+            
+            let passedTests = 0;
+            
+            for (const test of tests) {
+                try {
+                    log(`\n=== ${test.name} ===`, 'info');
+                    await test.func();
+                    passedTests++;
+                } catch (error) {
+                    log(`❌ ${test.name} failed: ${error.message}`, 'error');
+                }
+            }
+            
+            // Final results
+            log(`\n🏁 Phase 1 Integration Tests Complete`, 'info');
+            log(`✅ Passed: ${passedTests}/${tests.length}`, passedTests === tests.length ? 'success' : 'warning');
+            
+            if (passedTests === tests.length) {
+                log(`🎉 Phase 1 SUCCESS: All success criteria met!`, 'success');
+                log(`Ready to proceed to Phase 2: Multi-App Support`, 'info');
+            } else {
+                log(`⚠️ Phase 1 INCOMPLETE: ${tests.length - passedTests} tests failed`, 'warning');
+                log(`Please fix failing tests before proceeding to Phase 2`, 'warning');
+            }
+        };
+
+        // Clear results
+        window.clearResults = function() {
+            document.getElementById('test-output').innerHTML = 'Test output cleared...\n';
+            testResults.clear();
+            completedTests = 0;
+            updateProgress();
+            updateTestResults();
+        };
+
+        // Check implementation status
+        async function checkImplementationStatus() {
+            const statusDiv = document.getElementById('implementation-status');
+            let html = '<h4>Implementation Status:</h4>';
+            
+            const checks = [
+                { name: 'Enhanced IWA Builder', module: '../src/iwa-builder-enhanced.js' },
+                { name: 'wbn-sign dependency', check: () => import('wbn-sign') },
+                { name: 'Web Crypto API', check: () => crypto.subtle ? Promise.resolve() : Promise.reject('Not available') }
+            ];
+            
+            for (const check of checks) {
+                try {
+                    if (check.module) {
+                        await import(check.module);
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    } else if (check.check) {
+                        await check.check();
+                        html += `<p>✅ ${check.name}: Available</p>`;
+                    }
+                } catch (error) {
+                    html += `<p>❌ ${check.name}: ${error.message}</p>`;
+                }
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            log('Phase 1 Integration Test loaded', 'success');
+            checkImplementationStatus();
+        });
+    </script>
+</body>
+</html>

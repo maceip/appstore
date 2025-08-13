@@ -1,6 +1,6 @@
 {
-    "name": "vite-iwa-template",
-    "short_name": "IWA-Vite",
+    "name": "appstore",
+    "short_name": "AppStore",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -20,5 +20,8 @@
         "vite": "^7.0.4",
         "vite-plugin-html-inject": "^1.1.2",
         "wbn-sign": "^0.2.1"
+    },
+    "dependencies": {
+        "@matrixai/quic": "^2.0.9"
     }
 }
